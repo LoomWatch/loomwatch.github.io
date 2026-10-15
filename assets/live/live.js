@@ -14139,33 +14139,33 @@ var nd = [
 	lilac: "#BDB0E6",
 	rose: "#EBB3C0",
 	oat: "#E8DFCF"
-}, id = "#EFEAE0", ad = "#F4EFE4", od = "#17150F", sd = "#56524A", cd = "#A9A59C", ld = "#D8A93C", ud = "#8A6A16", dd = "#2B2B33";
-function fd(e, t) {
+}, id = "#EFEAE0", ad = "#17150F", od = "#A9A59C", sd = "#D8A93C";
+function cd(e, t) {
 	let n = document.createElement("canvas");
 	n.width = e, n.height = t;
 	let r = n.getContext("2d");
 	if (!r) throw Error("This browser cannot draw on a canvas.");
 	return [n, r];
 }
-function pd(e, t = !0) {
+function ld(e, t = !0) {
 	let n = new ii(e);
 	return n.flipY = !1, t && (n.colorSpace = j), n.anisotropy = 4, n;
 }
-function md() {
+function ud() {
 	let e = getComputedStyle(document.documentElement);
 	return {
 		sans: e.getPropertyValue("--font-sans").trim() || "Inter, system-ui, sans-serif",
 		serif: e.getPropertyValue("--font-serif").trim() || "Georgia, serif"
 	};
 }
-function hd(e, t, n, r, i, a, o, s) {
+function dd(e, t, n, r, i, a, o, s) {
 	let c = a;
 	for (e.font = s(c); e.measureText(t).width > i && c > o;) c -= 2, e.font = s(c);
 	let l = t;
 	for (; l.length > 1 && e.measureText(l).width > i;) l = l.slice(0, -1);
 	e.fillText(l === t ? t : `${l.slice(0, -1)}…`, n, r);
 }
-function gd(e, t, n, r) {
+function fd(e, t, n, r) {
 	let i = [];
 	for (let a of t.split(/\n+/)) {
 		let t = "";
@@ -14179,14 +14179,14 @@ function gd(e, t, n, r) {
 	}
 	return i;
 }
-function _d(t) {
-	let [n, r] = fd(1152, 288), [i, a] = fd(1152, 288);
+function pd(t) {
+	let [n, r] = cd(1152, 288), [i, a] = cd(1152, 288);
 	r.fillStyle = "#5E5A52", r.fillRect(0, 0, n.width, n.height), a.fillStyle = "#000", a.fillRect(0, 0, i.width, i.height), r.lineCap = "round", a.lineCap = "round";
 	for (let e = 0; e < 9; e += 1) for (let n = 0; n < 36; n += 1) {
 		let i = t[e % 3 * 3 + n % 3], o = n * 32 + 16, s = e * 32 + 16, c = 12.8;
 		for (let [e, t, n] of [[
 			r,
-			i ? ld : cd,
+			i ? sd : od,
 			13.44
 		], [
 			a,
@@ -14195,72 +14195,60 @@ function _d(t) {
 		]]) e.strokeStyle = t, e.lineWidth = n, e.beginPath(), i ? (e.moveTo(o - c, s), e.lineTo(o + c, s)) : (e.moveTo(o, s - c), e.lineTo(o, s + c)), e.stroke();
 		r.strokeStyle = "rgba(255, 255, 255, 0.18)", r.lineWidth = 2.56, r.beginPath(), i ? (r.moveTo(o - c + 3, s - 2.56), r.lineTo(o + c - 3, s - 2.56)) : (r.moveTo(o - 2.56, s - c + 3), r.lineTo(o - 2.56, s + c - 3)), r.stroke();
 	}
-	let o = pd(n), s = pd(i, !1);
+	let o = ld(n), s = ld(i, !1);
 	for (let t of [o, s]) t.wrapS = e;
 	return {
 		map: o,
 		bump: s
 	};
 }
-function vd() {
-	let [e, t] = fd(2048, 904);
+function md() {
+	let [e, t] = cd(2048, 904);
 	t.fillStyle = "#16161B", t.fillRect(0, 0, e.width, e.height), t.fillStyle = "#2C2C34";
 	for (let n = 22; n < e.height; n += 44) for (let r = 22; r < e.width; r += 44) t.beginPath(), t.arc(r, n, 4.2, 0, Math.PI * 2), t.fill();
-	return t.strokeStyle = "rgba(216, 169, 60, 0.55)", t.lineWidth = 4, t.beginPath(), t.moveTo(-20, 760), t.bezierCurveTo(520, 640, 760, 840, 1024, 760), t.bezierCurveTo(1290, 680, 1560, 860, 2070, 720), t.stroke(), pd(e);
+	return t.strokeStyle = "rgba(216, 169, 60, 0.55)", t.lineWidth = 4, t.beginPath(), t.moveTo(-20, 760), t.bezierCurveTo(520, 640, 760, 840, 1024, 760), t.bezierCurveTo(1290, 680, 1560, 860, 2070, 720), t.stroke(), ld(e);
 }
-function yd(e, t) {
-	let [n, r] = fd(1024, 188), { sans: i, serif: a } = md();
-	return r.fillStyle = id, r.fillRect(0, 0, n.width, n.height), r.textAlign = "center", r.textBaseline = "alphabetic", r.fillStyle = od, hd(r, e || "New agent", 512, t ? 104 : 124, 940, 104, 40, (e) => `400 ${e}px ${a}`), t && (r.fillStyle = sd, hd(r, t, 512, 160, 900, 34, 20, (e) => `500 ${e}px ${i}`)), pd(n);
+function hd(e, t) {
+	let [n, r] = cd(256, 116), { sans: i } = ud();
+	return r.fillStyle = t ? "#3A3A44" : e === "Web" ? "#E9C46A" : id, r.fillRect(0, 0, n.width, n.height), r.textAlign = "center", r.textBaseline = "middle", r.fillStyle = t ? id : ad, dd(r, e, 128, 60, 230, 54, 26, (e) => `700 ${e}px ${i}`), ld(n);
 }
-function bd(e) {
-	let [t, n] = fd(512, 116), { sans: r } = md();
-	return n.fillStyle = dd, n.fillRect(0, 0, t.width, t.height), n.textAlign = "center", n.textBaseline = "middle", n.fillStyle = e ? id : cd, hd(n, e || "No app yet", 276, 60, 400, 50, 22, (e) => `600 ${e}px ${r}`), pd(t);
-}
-function xd(e, t) {
-	let [n, r] = fd(256, 116), { sans: i } = md();
-	return r.fillStyle = t ? "#3A3A44" : e === "Web" ? "#E9C46A" : id, r.fillRect(0, 0, n.width, n.height), r.textAlign = "center", r.textBaseline = "middle", r.fillStyle = t ? id : od, hd(r, e, 128, 60, 230, 54, 26, (e) => `700 ${e}px ${i}`), pd(n);
-}
-function Sd(e, t) {
-	let [n, r] = fd(512, 662), { sans: i } = md();
-	r.fillStyle = ad, r.fillRect(0, 0, n.width, n.height), r.fillStyle = ud, r.font = `700 22px ${i}`, r.textBaseline = "top", r.fillText("THE JOB", 34, 60);
-	let a = 34;
-	for (let [e, n] of [
-		["Job", t.job],
-		["How", t.method],
-		["Reply", t.reply]
-	]) {
-		r.font = `600 20px ${i}`;
-		let t = r.measureText(e).width + 46;
-		r.fillStyle = n ? "#E9C46A" : "rgba(23, 21, 15, 0.06)", r.beginPath(), r.roundRect(a, 98, t, 34, 17), r.fill(), r.fillStyle = n ? od : "#8B857C", r.fillText(`${n ? "✓" : "○"} ${e}`, a + 14, 105), a += t + 10;
-	}
-	r.fillStyle = od, r.font = `400 22px ${i}`;
-	let o = e.trim() ? gd(r, e.trim(), 444, 17) : [];
-	return o.length === 0 && (r.fillStyle = "#8B857C", r.fillText("Nothing written yet.", 34, 160)), o.forEach((e, t) => {
-		r.globalAlpha = t > 13 ? Math.max(.15, 1 - (t - 13) * .28) : 1, r.fillText(e, 34, 160 + t * 29);
-	}), r.globalAlpha = 1, pd(n);
-}
-function Cd(e, t) {
-	let [n, r] = fd(320, 240), { sans: i } = md();
+function gd(e, t) {
+	let [n, r] = cd(320, 240), { sans: i } = ud();
 	return r.fillStyle = id, r.fillRect(0, 0, n.width, n.height), r.fillStyle = [
 		"#E9C46A",
 		"#D9D2C4",
 		"#85817A"
-	][t % 3], r.beginPath(), r.roundRect(24, 26, 86, 16, 8), r.fill(), r.fillStyle = od, r.font = `700 50px ${i}`, r.textBaseline = "top", gd(r, e.replace(/[-_]+/g, " "), 280, 3).forEach((e, t) => r.fillText(e, 22, 58 + t * 56)), pd(n);
+	][t % 3], r.beginPath(), r.roundRect(24, 26, 86, 16, 8), r.fill(), r.fillStyle = ad, r.font = `700 50px ${i}`, r.textBaseline = "top", fd(r, e.replace(/[-_]+/g, " "), 280, 3).forEach((e, t) => r.fillText(e, 22, 58 + t * 56)), ld(n);
 }
-function wd() {
-	let [t, n] = fd(256, 256);
+function _d() {
+	let [t, n] = cd(256, 256);
 	n.fillStyle = "#000", n.fillRect(0, 0, 256, 256), n.lineCap = "round";
 	for (let [e, t] of [[1, .9], [-1, .7]]) for (let r = -256; r < 512; r += 8) n.strokeStyle = `rgba(255, 255, 255, ${t})`, n.lineWidth = 4, n.beginPath(), n.moveTo(r, 0), n.lineTo(r + e * 256, 256), n.stroke();
-	let r = pd(t, !1);
+	let r = ld(t, !1);
 	return r.wrapS = e, r.wrapT = e, r;
 }
 //#endregion
 //#region src/components/agents/workbenchScene.ts
-var Td = {
+function vd(e, { x: t, y: n, ux: r, uy: i, vx: a, vy: o }) {
+	let s = Math.hypot(r, i), c = Math.hypot(a, o);
+	if (s < 1 || c < 1) return;
+	let [l, u, d, f] = [
+		r / s,
+		i / s,
+		a / c,
+		o / c
+	], p = Math.abs(u) < .02 && Math.abs(d) < .02 ? `translate(${Math.round(t)}px, ${Math.round(n)}px)` : `matrix(${l.toFixed(4)}, ${u.toFixed(4)}, ${d.toFixed(4)}, ${f.toFixed(4)}, ${t.toFixed(1)}, ${n.toFixed(1)})`, m = `${s.toFixed(1)} ${c.toFixed(1)} ${p}`;
+	e.dataset.at !== m && (e.dataset.at = m, e.style.width = `${s.toFixed(1)}px`, e.style.height = `${c.toFixed(1)}px`, e.style.transform = p);
+}
+var yd = {
 	web: "web",
 	edits: "files",
 	commands: "cmd"
-}, Ed = .72, Dd = new X("#E9C46A"), Od = new X("#6AB8FF"), kd = .12, Ad = .5, jd = .24, Md = {
+}, bd = {
+	name: "nameplate_face",
+	job: "job_sheet",
+	app: "laptop_face"
+}, xd = .72, Sd = new X("#E9C46A"), Cd = new X("#6AB8FF"), wd = .12, Td = .5, Ed = .24, Dd = {
 	bodyY: 0,
 	bodyRX: 0,
 	bodyRY: 0,
@@ -14277,10 +14265,23 @@ var Td = {
 	screen: .12,
 	typing: 0,
 	hands: 0
-}, Nd = (e, t, n) => H.smoothstep(n, e, t), Pd = (e) => {
+}, Od = (e, t, n) => H.smoothstep(n, e, t), kd = (e) => {
 	for (let t = e; t; t = t.parent) if (!t.visible) return !1;
 	return !0;
-}, Fd = (e) => Nd(0, .18, e) * (1 - Nd(.72, 1, e)), Id = (e) => Math.sin(Math.PI * H.clamp(e, 0, 1)), Ld = class {
+}, Ad = (e) => Od(0, .18, e) * (1 - Od(.72, 1, e)), jd = (e) => Math.sin(Math.PI * H.clamp(e, 0, 1));
+function Md(e) {
+	let t = e.geometry.getAttribute("uv"), n = e.geometry.getAttribute("position");
+	return [
+		[0, 0],
+		[1, 0],
+		[0, 1]
+	].map(([e, r]) => {
+		let i = 0;
+		for (let n = 1; n < t.count; n += 1) Math.hypot(t.getX(n) - e, t.getY(n) - r) < Math.hypot(t.getX(i) - e, t.getY(i) - r) && (i = n);
+		return new G().fromBufferAttribute(n, i);
+	});
+}
+var Nd = class {
 	renderer;
 	scene = new Lt();
 	camera = new Ya(24, 1, .1, 40);
@@ -14298,6 +14299,7 @@ var Td = {
 		skill: null
 	}));
 	faces = /* @__PURE__ */ new Map();
+	faceCorners = /* @__PURE__ */ new Map();
 	parts = /* @__PURE__ */ new Map();
 	flashes = /* @__PURE__ */ new Map();
 	view = null;
@@ -14314,7 +14316,7 @@ var Td = {
 	press = null;
 	actions = [];
 	tweens = [];
-	pose = { ...Md };
+	pose = { ...Dd };
 	nextFidget = 7;
 	nextBlink = 2.5;
 	now = 0;
@@ -14327,9 +14329,6 @@ var Td = {
 	heads = /* @__PURE__ */ new Map();
 	eyes = [];
 	drawn = {
-		name: "",
-		app: "",
-		job: "",
 		pattern: "",
 		figure: ""
 	};
@@ -14351,7 +14350,7 @@ var Td = {
 	}
 	async load(e) {
 		let t = (await new Yl().loadAsync(e)).scene;
-		this.wound = this.own(wd()), t.traverse((e) => {
+		this.wound = this.own(_d()), t.traverse((e) => {
 			if (e.name && this.nodes.set(e.name, e), /_eye_[lr]$/.test(e.name) && this.eyes.push(e), !(e instanceof ar)) return;
 			let t = e.material.name;
 			e.material.dispose(), e.material = this.material(t, e.name), this.roles.set(e, t);
@@ -14359,6 +14358,7 @@ var Td = {
 			e.castShadow = t !== "glint" && !n, e.receiveShadow = t !== "glint", this.pickables.push(e), this.disposables.push(e.geometry);
 		});
 		for (let e of nd) this.heads.set(e, this.node(`head_${e}`));
+		for (let [e, t] of Object.entries(bd)) this.faceCorners.set(e, Md(this.node(t)));
 		this.scene.add(t), t.updateMatrixWorld(!0);
 		for (let { key: e, node: t } of Qu) {
 			let n = this.node(`key_${t}`);
@@ -14398,12 +14398,12 @@ var Td = {
 		if (this.pointer = new U(e, t), this.drag) {
 			if (!this.drag.moved && Math.hypot(e - this.drag.x, t - this.drag.y) > 5) {
 				this.drag.moved = !0;
-				let e = this.node(`key_${Td[this.drag.key]}`);
+				let e = this.node(`key_${yd[this.drag.key]}`);
 				this.tweens = this.tweens.filter((t) => t.node !== e), this.scene.attach(e);
 			}
 			if (this.drag.moved) {
 				let n = new G();
-				this.ray(e, t).ray.intersectPlane(this.drag.plane, n), n && this.node(`key_${Td[this.drag.key]}`).position.copy(n);
+				this.ray(e, t).ray.intersectPlane(this.drag.plane, n), n && this.node(`key_${yd[this.drag.key]}`).position.copy(n);
 			}
 			return;
 		}
@@ -14413,7 +14413,7 @@ var Td = {
 	pointerDown(e, t) {
 		let n = this.pick(e, t);
 		if (n?.key) {
-			let r = this.node(`key_${Td[n.key]}`).getWorldPosition(new G()), i = this.camera.getWorldDirection(new G()).negate();
+			let r = this.node(`key_${yd[n.key]}`).getWorldPosition(new G()), i = this.camera.getWorldDirection(new G()).negate();
 			return this.drag = {
 				key: n.key,
 				x: e,
@@ -14433,7 +14433,7 @@ var Td = {
 		if (this.drag = null, this.press = null, n && this.view) {
 			let r = !!this.view.look.allow[n.key], i = !r;
 			if (n.moved) {
-				let r = this.screen(this.node(`hook_${Td[n.key]}`).getWorldPosition(new G())), a = this.screen(this.node("dish").getWorldPosition(new G()));
+				let r = this.screen(this.node(`hook_${yd[n.key]}`).getWorldPosition(new G())), a = this.screen(this.node("dish").getWorldPosition(new G()));
 				i = Math.hypot(e - r.x, t - r.y) < Math.hypot(e - a.x, t - a.y);
 			}
 			this.homeKey(n.key, i), i !== r && this.callbacks.onKey(n.key, i);
@@ -14447,7 +14447,7 @@ var Td = {
 	apply(e, t) {
 		let { look: n } = t, r = t.pattern.map((e) => +!!e).join("");
 		if (this.drawn.pattern !== r) {
-			this.drawn.pattern = r, this.swatch?.map.dispose(), this.swatch?.bump.dispose(), this.swatch = _d(t.pattern);
+			this.drawn.pattern = r, this.swatch?.map.dispose(), this.swatch?.bump.dispose(), this.swatch = pd(t.pattern);
 			for (let e of this.meshes("scarf")) {
 				let t = e.material;
 				t.map = this.swatch.map, t.bumpMap = this.swatch.bump, t.needsUpdate = !0;
@@ -14455,14 +14455,10 @@ var Td = {
 		}
 		let i = `${t.figure.kind}/${t.figure.color}`;
 		this.drawn.figure !== i && (this.drawn.figure = i, this.wear(t.figure));
-		let a = `${n.name}\n${t.does}`;
-		this.drawn.name !== a && (this.drawn.name = a, this.paint("nameplate_face", yd(n.name.trim(), t.does.trim()))), this.drawn.app !== t.appName && (this.drawn.app = t.appName, this.paint("laptop_face", bd(t.appName)));
-		let o = `${n.instructions}\n${t.jobParts.job}${t.jobParts.method}${t.jobParts.reply}`;
-		this.drawn.job !== o && (this.drawn.job = o, this.paint("job_sheet", Sd(n.instructions, t.jobParts)));
-		for (let { node: e, word: t, key: n } of Qu) this.faces.has(`key_${e}_label`) || this.paint(`key_${e}_label`, xd(t, n === "commands"));
+		for (let { node: e, word: t, key: n } of Qu) this.faces.has(`key_${e}_label`) || this.paint(`key_${e}_label`, hd(t, n === "commands"));
 		this.node("envelope").visible = t.hasReply || t.mood === "done", this.pinCards(n.skills, e !== null);
 		for (let { key: t } of Qu) {
-			let r = this.node(`key_${Td[t]}`), i = this.node(n.allow[t] ? `hook_${Td[t]}` : `dish_${Td[t]}`);
+			let r = this.node(`key_${yd[t]}`), i = this.node(n.allow[t] ? `hook_${yd[t]}` : `dish_${yd[t]}`);
 			r.parent !== i && this.drag?.key !== t && !this.tweens.some((e) => e.node === r) && this.homeKey(t, !!n.allow[t], e !== null);
 		}
 		if (t.events > this.events && !this.reduced && (this.flicker = 1), this.events = t.events, e) {
@@ -14497,7 +14493,7 @@ var Td = {
 		}));
 		a.name = `card_${e + 1}_board`, a.castShadow = !0;
 		let o = new Ii(.2, .15), s = new ar(o, new Xi({
-			map: Cd(t, e),
+			map: gd(t, e),
 			roughness: .85
 		}));
 		s.name = `card_${e + 1}_face`, s.position.z = .0045, s.material.map.flipY = !0;
@@ -14532,10 +14528,10 @@ var Td = {
 		this.tween(e, new G(0, -.4, .2), e.quaternion.clone(), .4, 0, n, !0);
 	}
 	homeKey(e, t, n = !0) {
-		let r = this.node(`key_${Td[e]}`), i = this.node(t ? `hook_${Td[e]}` : `dish_${Td[e]}`), a = t ? this.keyHome.get(e) : {
+		let r = this.node(`key_${yd[e]}`), i = this.node(t ? `hook_${yd[e]}` : `dish_${yd[e]}`), a = t ? this.keyHome.get(e) : {
 			p: this.keyDish.get(e),
 			q: new W()
-		}, o = t ? 1 : Ed;
+		}, o = t ? 1 : xd;
 		if (this.tweens = this.tweens.filter((e) => e.node !== r), r.parent !== i && i.attach(r), !n || this.reduced) {
 			r.position.copy(a.p), r.quaternion.copy(a.q), r.scale.setScalar(o);
 			return;
@@ -14606,12 +14602,12 @@ var Td = {
 		this.last = e, this.now += t, this.loaded && this.update(t), this.frame();
 	};
 	frame() {
-		this.renderer.render(this.scene, this.camera), this.loaded && this.callbacks.onFrame(this.anchors());
+		this.renderer.render(this.scene, this.camera), this.loaded && this.callbacks.onFrame(this.anchors(), this.facesOnScreen());
 	}
 	update(e) {
 		let t = this.view;
 		if (!t) return;
-		let n = this.now, r = +!this.reduced, i = { ...Md }, a = null, o = () => this.node("laptop_lid").getWorldPosition(new G()).add(new G(0, .12, 0));
+		let n = this.now, r = +!this.reduced, i = { ...Dd }, a = null, o = () => this.node("laptop_lid").getWorldPosition(new G()).add(new G(0, .12, 0));
 		switch (t.mood) {
 			case "still":
 				i.bodyY = .004 * Math.sin(n * 1.7) * r, i.armLRX += .035 * Math.sin(n * 1.3) * r, i.armRRX += .035 * Math.sin(n * 1.3 + 1.7) * r;
@@ -14630,7 +14626,7 @@ var Td = {
 			case "asking":
 				if (i.band = 1, i.screen = .5, t.asked) {
 					let e = !this.reduced && (n - this.moodSince) % 3.2 > 2.3;
-					i.armRRX = -1.15, i.armRRZ = -.7, a = e ? "viewer" : this.node(`dish_${Td[t.asked]}`).getWorldPosition(new G());
+					i.armRRX = -1.15, i.armRRZ = -.7, a = e ? "viewer" : this.node(`dish_${yd[t.asked]}`).getWorldPosition(new G());
 				} else i.armRRX = -.25, i.armRRZ = -2.6 + .24 * Math.sin(n * 8) * r, i.hands = -.3, i.bodyY = .01 * Math.abs(Math.sin(n * 3.4)) * r, a = "viewer";
 				break;
 			case "done":
@@ -14659,7 +14655,7 @@ var Td = {
 		for (let e of this.actions) {
 			let t = (n - e.start) / e.duration;
 			if (t < 0) continue;
-			let r = Fd(t), s = (e, t) => {
+			let r = Ad(t), s = (e, t) => {
 				i[e] = H.lerp(i[e], t, r);
 			}, c = (e) => {
 				a = r > .3 ? e : a;
@@ -14676,17 +14672,17 @@ var Td = {
 					c(o()), this.flashes.set("app", .6 * (1 - t)), i.band = Math.max(i.band, 1 - t);
 					break;
 				case "spark":
-					i.scale += .12 * Id(t * 1.6), i.neckRZ += .09 * Math.sin(t * 40) * (1 - t), this.flashes.set("mind", .45 * (1 - t));
+					i.scale += .12 * jd(t * 1.6), i.neckRZ += .09 * Math.sin(t * 40) * (1 - t), this.flashes.set("mind", .45 * (1 - t));
 					break;
 				case "redressed":
-					i.scale += .18 * Id(t * 1.3), i.bodyY += .03 * Id(t * 1.3), a = "viewer";
+					i.scale += .18 * jd(t * 1.3), i.bodyY += .03 * jd(t * 1.3), a = "viewer";
 					break;
 				case "pin":
 				case "unpin":
-					c(this.node("card_3").getWorldPosition(new G())), i.bodyY += .025 * Id(t * 2);
+					c(this.node("card_3").getWorldPosition(new G())), i.bodyY += .025 * jd(t * 2);
 					break;
 				case "keyGive":
-					c(this.node("hooks").getWorldPosition(new G())), i.bodyY += .025 * Id(t * 2);
+					c(this.node("hooks").getWorldPosition(new G())), i.bodyY += .025 * jd(t * 2);
 					break;
 				case "keyTake":
 					c(this.node("dish").getWorldPosition(new G())), s("bodyRX", .05);
@@ -14694,25 +14690,25 @@ var Td = {
 				case "lookAround":
 					c(this.node(t < .5 ? "hooks" : "card_3").getWorldPosition(new G()));
 					break;
-				case "stretch": s("hands", -.3), s("armLRX", -.2), s("armLRZ", 2), s("armRRX", -.2), s("armRRZ", -2), i.bodyY += .015 * Id(t);
+				case "stretch": s("hands", -.3), s("armLRX", -.2), s("armLRZ", 2), s("armRRX", -.2), s("armRRZ", -2), i.bodyY += .015 * jd(t);
 			}
 		}
 		if (a) {
 			let e = this.node("head").getWorldPosition(new G()), t = (a === "viewer" ? this.camera.position.clone() : a).sub(e), n = t.z < -.1;
-			i.lookX = H.clamp(t.x / .75, -1, 1), i.lookY = H.clamp(t.y / .6, -1, 1), i.bodyRY = H.clamp((n ? -t.x : t.x) * .25, -.12, kd);
-		} else i.bodyRY = i.lookX * kd;
+			i.lookX = H.clamp(t.x / .75, -1, 1), i.lookY = H.clamp(t.y / .6, -1, 1), i.bodyRY = H.clamp((n ? -t.x : t.x) * .25, -.12, wd);
+		} else i.bodyRY = i.lookX * wd;
 		let s = this.reduced ? 1 : 1 - Math.exp(-e * 8);
 		for (let e of Object.keys(i)) this.pose[e] += (i[e] - this.pose[e]) * s;
 		let c = this.pose, l = this.node("body");
 		l.position.y = c.bodyY, l.rotation.set(c.bodyRX, c.bodyRY, 0), this.node("neck").rotation.set(c.neckRX - c.lookY * .05, 0, c.neckRZ - c.lookX * .06);
 		let u = this.node("head");
-		u.rotation.set(-c.lookY * jd, c.lookX * Ad, 0), u.scale.setScalar(c.scale), this.node("arm_l").rotation.set(c.armLRX, 0, c.armLRZ), this.node("arm_r").rotation.set(c.armRRX, 0, c.armRRZ), this.mittens(c, r), this.blink();
+		u.rotation.set(-c.lookY * Ed, c.lookX * Td, 0), u.scale.setScalar(c.scale), this.node("arm_l").rotation.set(c.armLRX, 0, c.armLRZ), this.node("arm_r").rotation.set(c.armRRX, 0, c.armRRZ), this.mittens(c, r), this.blink();
 		let d = this.node("laptop_light").material;
-		d.emissive.copy(Od), d.emissiveIntensity = c.band * (this.reduced ? 1 : .75 + .25 * Math.sin(n * 5)), this.flicker = Math.max(0, this.flicker - e * 4);
+		d.emissive.copy(Cd), d.emissiveIntensity = c.band * (this.reduced ? 1 : .75 + .25 * Math.sin(n * 5)), this.flicker = Math.max(0, this.flicker - e * 4);
 		let f = this.node("laptop_screen").material;
 		f.emissiveIntensity = c.screen + this.flicker * .9, this.screenLight && (this.screenLight.intensity = (c.screen + this.flicker * .6) * .35), this.highlight(t), this.liftAsked(t), this.tweens = this.tweens.filter((e) => {
 			let t = H.clamp((this.now - e.start) / e.duration, 0, 1), n = 1 - (1 - t) ** 3;
-			return e.node.position.lerpVectors(e.fromP, e.toP, n), e.node.position.y += e.arc * Id(t), e.node.quaternion.slerpQuaternions(e.fromQ, e.toQ, n), e.node.scale.setScalar(H.lerp(e.fromS, e.toS, n)), t >= 1 ? (e.done?.(), !1) : !0;
+			return e.node.position.lerpVectors(e.fromP, e.toP, n), e.node.position.y += e.arc * jd(t), e.node.quaternion.slerpQuaternions(e.fromQ, e.toQ, n), e.node.scale.setScalar(H.lerp(e.fromS, e.toS, n)), t >= 1 ? (e.done?.(), !1) : !0;
 		});
 	}
 	mittens(e, t) {
@@ -14730,7 +14726,7 @@ var Td = {
 	}
 	liftAsked(e) {
 		for (let { key: t } of Qu) {
-			let n = this.node(`key_${Td[t]}`);
+			let n = this.node(`key_${yd[t]}`);
 			if (e.look.allow[t] || this.drag?.key === t || !n.parent || this.tweens.some((e) => e.node === n)) continue;
 			let r = e.asked === t ? .06 + (this.reduced ? 0 : .02 * Math.sin(this.now * 5)) : 0, i = new G(0, 1, 0).applyQuaternion(n.parent.getWorldQuaternion(new W()).invert());
 			n.position.copy(this.keyDish.get(t)).addScaledVector(i, r);
@@ -14742,7 +14738,7 @@ var Td = {
 			let r = this.partOf(t), i = t.material, a = r ? this.flashes.get(r) ?? 0 : 0;
 			r && r === this.hovered && (a = Math.max(a, .16)), r && r === e.open && (a = Math.max(a, .1)), e.dropping && t.name === "pegboard_face" && (a = .12);
 			let o = t.parent?.name ?? "";
-			e.asked && o === `key_${Td[e.asked]}` && (a = Math.max(a, this.reduced ? .35 : .2 + .25 * (.5 + .5 * Math.sin(this.now * 6)))), this.hoveredKey && o === `key_${Td[this.hoveredKey]}` && (a = Math.max(a, .3)), i.emissive.copy(Dd), i.emissiveIntensity = a;
+			e.asked && o === `key_${yd[e.asked]}` && (a = Math.max(a, this.reduced ? .35 : .2 + .25 * (.5 + .5 * Math.sin(this.now * 6)))), this.hoveredKey && o === `key_${yd[this.hoveredKey]}` && (a = Math.max(a, .3)), i.emissive.copy(Sd), i.emissiveIntensity = a;
 		}
 	}
 	anchors() {
@@ -14794,6 +14790,24 @@ var Td = {
 			]))
 		};
 	}
+	facesOnScreen() {
+		let e = (e) => {
+			let t = this.node(bd[e]), [n, r, i] = this.faceCorners.get(e).map((e) => this.screen(t.localToWorld(e.clone())));
+			return {
+				x: n.x,
+				y: n.y,
+				ux: r.x - n.x,
+				uy: r.y - n.y,
+				vx: i.x - n.x,
+				vy: i.y - n.y
+			};
+		};
+		return {
+			name: e("name"),
+			job: e("job"),
+			app: e("app")
+		};
+	}
 	partPoint(e) {
 		let t = {
 			mind: null,
@@ -14817,7 +14831,7 @@ var Td = {
 		return this.raycaster.setFromCamera(new U(e / this.width * 2 - 1, -(t / this.height) * 2 + 1), this.camera), this.raycaster;
 	}
 	pick(e, t) {
-		let n = this.ray(e, t).intersectObjects(this.pickables, !1).find((e) => Pd(e.object));
+		let n = this.ray(e, t).intersectObjects(this.pickables, !1).find((e) => kd(e.object));
 		if (!n) return null;
 		let r = [];
 		for (let e = n.object; e; e = e.parent) e.name && r.push(e.name);
@@ -14860,8 +14874,8 @@ var Td = {
 		this.camera.position.copy(e).addScaledVector(t, i), this.camera.lookAt(e), this.camera.updateProjectionMatrix();
 	}
 	material(e, t) {
-		return Rd(e, t, {
-			pegboard: () => this.own(vd()),
+		return Pd(e, t, {
+			pegboard: () => this.own(md()),
 			wound: this.wound
 		});
 	}
@@ -14869,7 +14883,7 @@ var Td = {
 		return this.disposables.push(e), e;
 	}
 };
-function Rd(e, t, n) {
+function Pd(e, t, n) {
 	let r = (e, t, n = .4) => new Zi({
 		color: e,
 		roughness: t,
@@ -14930,17 +14944,17 @@ function Rd(e, t, n) {
 		case "gold": return i("#E2B451", .3, 1);
 		case "appband": return new Xi({
 			color: "#85817A",
-			emissive: Od,
+			emissive: Cd,
 			emissiveIntensity: 0,
 			roughness: .4
 		});
 		case "screen": return new Xi({
 			color: "#141A24",
-			emissive: Od,
+			emissive: Cd,
 			emissiveIntensity: .12,
 			roughness: .3
 		});
-		case "paper": return i("#F4EFE4", .85);
+		case "paper": return i(t === "laptop_face" ? "#2B2B33" : t === "nameplate_face" ? "#EFEAE0" : "#F4EFE4", .85);
 		case "ink": return i("#B9B1A2", .85);
 		case "tag_web": return i("#E9C46A", .5);
 		case "tag_files": return i("#EFEAE0", .55);
@@ -14950,7 +14964,7 @@ function Rd(e, t, n) {
 }
 //#endregion
 //#region src/site/crewScene.ts
-var zd = {
+var Fd = {
 	bodyY: 0,
 	bodyRY: 0,
 	lookX: 0,
@@ -14960,7 +14974,7 @@ var zd = {
 	armRRX: -.62,
 	armRRZ: .16,
 	wave: 0
-}, Bd = .78, Vd = .5, Hd = .24, Ud = class {
+}, Id = .78, Ld = .5, Rd = .24, zd = class {
 	renderer;
 	scene = new Lt();
 	camera = new Ya(22, 1, .1, 40);
@@ -15007,12 +15021,12 @@ var zd = {
 		t.removeFromParent(), t.position.set(0, 0, 0), t.updateMatrixWorld(!0);
 		let n = new Qt().setFromObject(t, !0);
 		this.standY = -n.min.y;
-		let r = this.own(wd()), i = () => this.own(vd());
+		let r = this.own(_d()), i = () => this.own(md());
 		this.members.forEach((e, n) => {
-			let a = t.clone(!0), o = [], s = new X(rd[e.figure.color]), c = _d(td(e.id).over);
+			let a = t.clone(!0), o = [], s = new X(rd[e.figure.color]), c = pd(td(e.id).over);
 			this.own(c.map), this.own(c.bump), a.traverse((e) => {
 				if (!(e instanceof ar)) return;
-				let t = e.material.name, a = Rd(t, e.name, {
+				let t = e.material.name, a = Pd(t, e.name, {
 					pegboard: i,
 					wound: r
 				});
@@ -15038,7 +15052,7 @@ var zd = {
 				handR: l("hand_r"),
 				eyes: u,
 				meshes: o,
-				pose: { ...zd },
+				pose: { ...Fd },
 				nextBlink: 1.5 + n * 1.37 % 2.6,
 				phase: n * 1.618,
 				hop: -10
@@ -15059,7 +15073,7 @@ var zd = {
 		let e = this.figures.length, t = this.width / this.height < 1.25, n = Math.ceil(e / 2), r = t ? [Array.from({ length: n }, (e, t) => t), Array.from({ length: e - n }, (e, t) => n + t)] : [Array.from({ length: e }, (e, t) => t)], i = r.length === this.rows.length;
 		if (this.rows = r, r.forEach((e, t) => e.forEach((n, r) => {
 			let i = r - (e.length - 1) / 2 + (t === 1 ? .5 : 0), a = this.figures[n].root;
-			a.position.set(i * Bd, this.standY, t === 1 ? -.95 : -.06 * i * i), a.rotation.y = -i * .07;
+			a.position.set(i * Id, this.standY, t === 1 ? -.95 : -.06 * i * i), a.rotation.y = -i * .07;
 		})), !i || this.threads.length === 0) {
 			for (let e of this.threads) e.geometry.dispose(), e.removeFromParent();
 			this.threads = r.map(() => {
@@ -15124,7 +15138,7 @@ var zd = {
 			this.figures[e].hop = t, this.nextFidget = t + 3.5 + t * 13.7 % 4;
 		}
 		this.figures.forEach((i, a) => {
-			let o = { ...zd }, s = t + i.phase;
+			let o = { ...Fd }, s = t + i.phase;
 			o.bodyY = .006 * Math.sin(s * 1.6) * n, o.armLRX += .04 * Math.sin(s * 1.3) * n, o.armRRX += .04 * Math.sin(s * 1.3 + 1.7) * n;
 			let c = i.head.getWorldPosition(new G()), l = null;
 			if (r !== null && r !== a && (l = this.figures[r].head.getWorldPosition(new G())), l) {
@@ -15140,7 +15154,7 @@ var zd = {
 			let d = this.reduced ? 1 : 1 - Math.exp(-e * 7);
 			for (let e of Object.keys(o)) i.pose[e] += (o[e] - i.pose[e]) * d;
 			let f = i.pose;
-			i.body.position.y = f.bodyY, i.body.rotation.set(0, f.bodyRY, 0), i.neck.rotation.set(-f.lookY * .05, 0, -f.lookX * .06), i.head.rotation.set(-f.lookY * Hd, f.lookX * Vd, 0), i.armL.rotation.set(f.armLRX, 0, f.armLRZ), i.armR.rotation.set(f.armRRX, 0, f.armRRZ), i.handR.rotation.x = -.3 * f.wave, this.blink(i);
+			i.body.position.y = f.bodyY, i.body.rotation.set(0, f.bodyRY, 0), i.neck.rotation.set(-f.lookY * .05, 0, -f.lookX * .06), i.head.rotation.set(-f.lookY * Rd, f.lookX * Ld, 0), i.armL.rotation.set(f.armLRX, 0, f.armLRZ), i.armR.rotation.set(f.armRRX, 0, f.armRRZ), i.handR.rotation.x = -.3 * f.wave, this.blink(i);
 		}), this.scene.updateMatrixWorld(!0), this.weave();
 	}
 	threadCurve(e) {
@@ -15188,4 +15202,4 @@ var zd = {
 	}
 };
 //#endregion
-export { Ud as CrewScene, Ld as WorkbenchScene, td as markPattern };
+export { zd as CrewScene, Nd as WorkbenchScene, td as markPattern, vd as placeFace };
