@@ -14338,7 +14338,7 @@ var Nd = class {
 			antialias: !0,
 			alpha: !0,
 			powerPreference: "low-power"
-		}), this.renderer.setClearColor(0, 0), this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)), this.renderer.toneMapping = 7, this.renderer.toneMappingExposure = 1, this.renderer.shadowMap.enabled = !0, this.renderer.shadowMap.type = 1;
+		}), this.renderer.setClearColor(0, 0), this.renderer.toneMapping = 7, this.renderer.toneMappingExposure = 1, this.renderer.shadowMap.enabled = !0, this.renderer.shadowMap.type = 1;
 		let r = new Qo(this.renderer), i = new Ju();
 		this.scene.environment = r.fromScene(i, .04).texture, this.scene.environmentIntensity = .55, i.dispose(), r.dispose(), this.scene.add(new La("#FFF6E8", "#2A2A32", .7));
 		let a = new no("#FFF3E2", 2.4);
@@ -14379,7 +14379,8 @@ var Nd = class {
 		this.view = e, this.loaded && this.apply(t, e);
 	}
 	resize(e, t) {
-		this.width = Math.max(1, e), this.height = Math.max(1, t), this.renderer.setSize(this.width, this.height, !1), this.camera.aspect = this.width / this.height, this.fit();
+		let n = Pd(this.renderer, e, t);
+		this.width = n.width, this.height = n.height, this.camera.aspect = this.width / this.height, this.fit();
 	}
 	start() {
 		this.running || (this.running = !0, this.last = performance.now(), this.frameId = requestAnimationFrame(this.tick));
@@ -14874,7 +14875,7 @@ var Nd = class {
 		this.camera.position.copy(e).addScaledVector(t, i), this.camera.lookAt(e), this.camera.updateProjectionMatrix();
 	}
 	material(e, t) {
-		return Pd(e, t, {
+		return Fd(e, t, {
 			pegboard: () => this.own(md()),
 			wound: this.wound
 		});
@@ -14884,6 +14885,13 @@ var Nd = class {
 	}
 };
 function Pd(e, t, n) {
+	let r = Math.min(window.devicePixelRatio || 1, 2), i = Math.max(1, Math.floor(t * r)), a = Math.max(1, Math.floor(n * r));
+	return e.setDrawingBufferSize(i, a, 1), e.domElement.style.width = `${i / r}px`, e.domElement.style.height = `${a / r}px`, {
+		width: i / r,
+		height: a / r
+	};
+}
+function Fd(e, t, n) {
 	let r = (e, t, n = .4) => new Zi({
 		color: e,
 		roughness: t,
@@ -14964,7 +14972,7 @@ function Pd(e, t, n) {
 }
 //#endregion
 //#region src/site/crewScene.ts
-var Fd = {
+var Id = {
 	bodyY: 0,
 	bodyRY: 0,
 	lookX: 0,
@@ -14974,7 +14982,7 @@ var Fd = {
 	armRRX: -.62,
 	armRRZ: .16,
 	wave: 0
-}, Id = .78, Ld = .5, Rd = .24, zd = class {
+}, Ld = .78, Rd = .5, zd = .24, Bd = class {
 	renderer;
 	scene = new Lt();
 	camera = new Ya(22, 1, .1, 40);
@@ -15005,7 +15013,7 @@ var Fd = {
 			antialias: !0,
 			alpha: !0,
 			powerPreference: "low-power"
-		}), this.renderer.setClearColor(0, 0), this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)), this.renderer.toneMapping = 7, this.renderer.shadowMap.enabled = !0, this.renderer.shadowMap.type = 1;
+		}), this.renderer.setClearColor(0, 0), this.renderer.toneMapping = 7, this.renderer.shadowMap.enabled = !0, this.renderer.shadowMap.type = 1;
 		let i = new Qo(this.renderer), a = new Ju();
 		this.scene.environment = i.fromScene(a, .04).texture, this.scene.environmentIntensity = .55, a.dispose(), i.dispose(), this.scene.add(new La("#FFF6E8", "#2A2A32", .75));
 		let o = new no("#FFF3E2", 2.3);
@@ -15026,7 +15034,7 @@ var Fd = {
 			let a = t.clone(!0), o = [], s = new X(rd[e.figure.color]), c = pd(td(e.id).over);
 			this.own(c.map), this.own(c.bump), a.traverse((e) => {
 				if (!(e instanceof ar)) return;
-				let t = e.material.name, a = Pd(t, e.name, {
+				let t = e.material.name, a = Fd(t, e.name, {
 					pegboard: i,
 					wound: r
 				});
@@ -15052,7 +15060,7 @@ var Fd = {
 				handR: l("hand_r"),
 				eyes: u,
 				meshes: o,
-				pose: { ...Fd },
+				pose: { ...Id },
 				nextBlink: 1.5 + n * 1.37 % 2.6,
 				phase: n * 1.618,
 				hop: -10
@@ -15073,7 +15081,7 @@ var Fd = {
 		let e = this.figures.length, t = this.width / this.height < 1.25, n = Math.ceil(e / 2), r = t ? [Array.from({ length: n }, (e, t) => t), Array.from({ length: e - n }, (e, t) => n + t)] : [Array.from({ length: e }, (e, t) => t)], i = r.length === this.rows.length;
 		if (this.rows = r, r.forEach((e, t) => e.forEach((n, r) => {
 			let i = r - (e.length - 1) / 2 + (t === 1 ? .5 : 0), a = this.figures[n].root;
-			a.position.set(i * Id, this.standY, t === 1 ? -.95 : -.06 * i * i), a.rotation.y = -i * .07;
+			a.position.set(i * Ld, this.standY, t === 1 ? -.95 : -.06 * i * i), a.rotation.y = -i * .07;
 		})), !i || this.threads.length === 0) {
 			for (let e of this.threads) e.geometry.dispose(), e.removeFromParent();
 			this.threads = r.map(() => {
@@ -15090,7 +15098,8 @@ var Fd = {
 		});
 	}
 	resize(e, t) {
-		this.width = Math.max(1, e), this.height = Math.max(1, t), this.renderer.setSize(this.width, this.height, !1), this.camera.aspect = this.width / this.height, this.loaded && this.layout(), this.loaded && !this.running && this.frame();
+		let n = Pd(this.renderer, e, t);
+		this.width = n.width, this.height = n.height, this.camera.aspect = this.width / this.height, this.loaded && this.layout(), this.loaded && !this.running && this.frame();
 	}
 	start() {
 		this.running || (this.running = !0, this.last = performance.now(), this.frameId = requestAnimationFrame(this.tick));
@@ -15138,7 +15147,7 @@ var Fd = {
 			this.figures[e].hop = t, this.nextFidget = t + 3.5 + t * 13.7 % 4;
 		}
 		this.figures.forEach((i, a) => {
-			let o = { ...Fd }, s = t + i.phase;
+			let o = { ...Id }, s = t + i.phase;
 			o.bodyY = .006 * Math.sin(s * 1.6) * n, o.armLRX += .04 * Math.sin(s * 1.3) * n, o.armRRX += .04 * Math.sin(s * 1.3 + 1.7) * n;
 			let c = i.head.getWorldPosition(new G()), l = null;
 			if (r !== null && r !== a && (l = this.figures[r].head.getWorldPosition(new G())), l) {
@@ -15154,7 +15163,7 @@ var Fd = {
 			let d = this.reduced ? 1 : 1 - Math.exp(-e * 7);
 			for (let e of Object.keys(o)) i.pose[e] += (o[e] - i.pose[e]) * d;
 			let f = i.pose;
-			i.body.position.y = f.bodyY, i.body.rotation.set(0, f.bodyRY, 0), i.neck.rotation.set(-f.lookY * .05, 0, -f.lookX * .06), i.head.rotation.set(-f.lookY * Rd, f.lookX * Ld, 0), i.armL.rotation.set(f.armLRX, 0, f.armLRZ), i.armR.rotation.set(f.armRRX, 0, f.armRRZ), i.handR.rotation.x = -.3 * f.wave, this.blink(i);
+			i.body.position.y = f.bodyY, i.body.rotation.set(0, f.bodyRY, 0), i.neck.rotation.set(-f.lookY * .05, 0, -f.lookX * .06), i.head.rotation.set(-f.lookY * zd, f.lookX * Rd, 0), i.armL.rotation.set(f.armLRX, 0, f.armLRZ), i.armR.rotation.set(f.armRRX, 0, f.armRRZ), i.handR.rotation.x = -.3 * f.wave, this.blink(i);
 		}), this.scene.updateMatrixWorld(!0), this.weave();
 	}
 	threadCurve(e) {
@@ -15202,4 +15211,4 @@ var Fd = {
 	}
 };
 //#endregion
-export { zd as CrewScene, Nd as WorkbenchScene, td as markPattern, vd as placeFace };
+export { Bd as CrewScene, Nd as WorkbenchScene, td as markPattern, vd as placeFace };
