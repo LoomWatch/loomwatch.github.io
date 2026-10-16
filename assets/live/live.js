@@ -16943,7 +16943,10 @@ var Np = {
 	waiting: 1,
 	working: [.6, 1],
 	hovered: 1
-}, Rp = 2.4, zp = class {
+}, Rp = 2.4, zp = .2, Bp = {
+	depth: .8,
+	out: 3
+}, Vp = class {
 	renderer;
 	scene = new Rt();
 	camera = new Wo(22, 1, .1, 40);
@@ -16979,6 +16982,10 @@ var Np = {
 	passTo = null;
 	bead = new kt();
 	floor;
+	key = new Ko("#FFF3E2", 2.3, 0, Math.PI / 4, 0, 0);
+	bulb = null;
+	reach = [];
+	stageWidth = { value: 1 };
 	glow;
 	colors = {
 		ready: bp("#4FC98D"),
@@ -16992,11 +16999,15 @@ var Np = {
 			alpha: !0,
 			powerPreference: "low-power"
 		}), this.renderer.setClearColor(0, 0), this.renderer.autoClear = !1, this.renderer.toneMapping = 7, this.renderer.shadowMap.enabled = !0, this.renderer.shadowMap.type = 1, this.scene.add(new Mo("#FFF6E8", "#2A2A32", .75));
-		let i = new Zo("#FFF3E2", 2.3);
-		i.position.set(-1.6, 4.2, 3.4), i.castShadow = !0, i.shadow.mapSize.set(1024, 1024), i.shadow.camera.left = -3.2, i.shadow.camera.right = 3.2, i.shadow.camera.top = 2, i.shadow.camera.bottom = -1, i.shadow.camera.near = .5, i.shadow.camera.far = 10, i.shadow.bias = -4e-4, i.shadow.normalBias = .02, i.shadow.radius = 4, i.target.position.set(0, .5, 0), this.scene.add(i, i.target);
+		let i = this.key;
+		i.castShadow = !0, i.shadow.mapSize.set(1024, 1024), i.shadow.camera.near = .5, i.shadow.camera.far = 30, i.shadow.bias = -4e-4, i.shadow.normalBias = .02, i.shadow.radius = 4, this.scene.add(i, i.target);
 		let a = new Zo("#DDE6FF", 1);
-		a.position.set(2.5, 2.2, -2.5), this.scene.add(a);
-		let o = new Oa(14, 8), s = new Na({ opacity: .2 }), c = new X(o, s);
+		a.position.set(-2.5, 2.2, -2.5), this.scene.add(a);
+		let o = new Oa(14, 8), s = new Na({ opacity: zp });
+		s.onBeforeCompile = (e) => {
+			e.uniforms.stageWidth = this.stageWidth, e.fragmentShader = e.fragmentShader.replace("void main() {", "uniform float stageWidth;\nvoid main() {").replace("opacity * ( 1.0 - getShadowMask() )", "opacity * ( 1.0 - getShadowMask() ) * smoothstep( 0.0, 0.1, min( gl_FragCoord.x, stageWidth - gl_FragCoord.x ) / stageWidth )");
+		};
+		let c = new X(o, s);
 		c.rotation.x = -Math.PI / 2, c.receiveShadow = !0, this.scene.add(c), this.floor = c, this.disposables.push(o, s), this.glow = this.own(new yp(this.renderer, .9));
 	}
 	async load(e) {
@@ -17008,12 +17019,12 @@ var Np = {
 		this.standY = -n.min.y;
 		let r = this.own(Lf());
 		this.members.forEach((e, n) => {
-			let i = t.clone(!0), a = Bp(i, e, r, (e) => this.own(e));
+			let i = t.clone(!0), a = Hp(i, e, r, (e) => this.own(e));
 			for (let e of a) {
 				let t = e.userData.role;
 				e.castShadow = t !== "glint" && !e.name.endsWith("_face"), e.receiveShadow = t !== "glint", e.userData.member = n, e.userData.material = e.material;
 			}
-			let o = Vp(i), s = Hp(i);
+			let o = Up(i), s = Wp(i);
 			this.scene.add(i), this.figures.push({
 				root: i,
 				body: o("body"),
@@ -17123,6 +17134,9 @@ var Np = {
 	}
 	playTalk() {
 		this.script && !this.talkState?.done && (this.talking = !0);
+	}
+	lamp(e, t, n) {
+		this.bulb = new H(e, t), this.floor.material.opacity = n ? zp : 0, this.loaded && this.hangKey();
 	}
 	pick(e, t) {
 		if (e < 0 || t < 0 || e > this.width || t > this.height) return null;
@@ -17256,7 +17270,13 @@ var Np = {
 		}
 		this.camera.position.copy(o).addScaledVector(s, u), this.camera.lookAt(o), this.camera.updateProjectionMatrix(), this.camera.updateMatrixWorld();
 		let d = this.screen(new W(0, 0, a)).y - this.screen(new W(0, this.headTop, a)).y, f = this.renderer.getDrawingBufferSize(new H());
-		this.glow.resize(f.x, f.y, d * .05 * (f.x / this.width));
+		this.glow.resize(f.x, f.y, d * .05 * (f.x / this.width)), this.stageWidth.value = f.x, this.reach = [n, r].flatMap((e) => [i - .35, a + .35].flatMap((t) => [new W(e, 0, t), new W(e, this.headTop + .2, t)])), this.hangKey();
+	}
+	hangKey() {
+		let e = this.bulb ?? new H(this.width * .9, -this.height * 1.5), t = this.camera.position, n = new W(e.x / this.width * 2 - 1, 1 - e.y / this.height * 2, .5).unproject(this.camera).sub(t).normalize(), r = this.camera.getWorldDirection(new W()), i = this.reach.reduce((e, t) => e.add(t), new W()).divideScalar(this.reach.length), a = r.dot(i.clone().sub(t)) * Bp.depth, o = this.key;
+		o.position.copy(t).addScaledVector(n, a / Math.max(.05, n.dot(r))).sub(i).multiplyScalar(Bp.out).add(i);
+		let s = this.reach.map((e) => e.clone().sub(o.position).normalize()), c = s.reduce((e, t) => e.add(t), new W()).normalize();
+		o.angle = Math.min(1.45, Math.max(...s.map((e) => c.angleTo(e))) + .06), o.target.position.copy(o.position).add(c), o.updateMatrixWorld(), o.target.updateMatrixWorld();
 	}
 	screen(e) {
 		let t = e.clone().project(this.camera);
@@ -17269,7 +17289,7 @@ var Np = {
 		return this.disposables.push(e), e;
 	}
 };
-function Bp(e, t, n, r) {
+function Hp(e, t, n, r) {
 	let i = [], a = () => r(Pf()), o = new Y(Qd[t.figure.color]), s = Nf(Xd(t.id).over);
 	r(s.map), r(s.bump), e.traverse((e) => {
 		if (!(e instanceof X)) return;
@@ -17279,18 +17299,18 @@ function Bp(e, t, n, r) {
 		}));
 		(t === "skin" || t === "skin_wound") && c.color.copy(o), t === "skin_deep" && c.color.copy(o).multiplyScalar(.86), t === "scarf" && (c.map = s.map, c.bumpMap = s.bump), e.material = c, e.userData.role = t, i.push(e);
 	});
-	let c = Vp(e);
+	let c = Up(e);
 	for (let e of Zd) c(`head_${e}`).visible = e === t.figure.kind;
 	return i;
 }
-function Vp(e) {
+function Up(e) {
 	return (t) => {
 		let n = e.getObjectByName(t);
 		if (!n) throw Error(`The figure has no “${t}”.`);
 		return n;
 	};
 }
-function Hp(e) {
+function Wp(e) {
 	let t = [];
 	return e.traverse((e) => {
 		/_eye_[lr]$/.test(e.name) && t.push(e);
@@ -17298,7 +17318,7 @@ function Hp(e) {
 }
 //#endregion
 //#region src/site/cordScene.ts
-var Up = {
+var Gp = {
 	armLRX: -.12,
 	armLRZ: .34,
 	armRRX: -.12,
@@ -17306,7 +17326,7 @@ var Up = {
 	lookX: 0,
 	lookY: 0,
 	wave: 0
-}, Wp = class {
+}, Kp = class {
 	renderer;
 	scene = new Rt();
 	camera = new Wo(20, 1, .1, 40);
@@ -17317,7 +17337,7 @@ var Up = {
 	height = 1;
 	loaded = !1;
 	now = 0;
-	pose = { ...Up };
+	pose = { ...Gp };
 	root = null;
 	parts = null;
 	tie = new kt();
@@ -17344,16 +17364,16 @@ var Up = {
 		let t = (await cp(e)).scene.getObjectByName("figure");
 		if (!t) throw Error("The model has no figure.");
 		t.removeFromParent(), t.position.set(0, 0, 0);
-		let n = (e) => (this.disposables.push(e), e), r = Bp(t, this.member, n(Lf()), n);
+		let n = (e) => (this.disposables.push(e), e), r = Hp(t, this.member, n(Lf()), n);
 		for (let e of new Set(r.map((e) => e.geometry))) this.disposables.push(e);
-		let i = Vp(t), a = i("head");
+		let i = Up(t), a = i("head");
 		this.parts = {
 			neck: i("neck"),
 			head: a,
 			armL: i("arm_l"),
 			armR: i("arm_r"),
 			handR: i("hand_r"),
-			eyes: Hp(t)
+			eyes: Wp(t)
 		}, t.updateMatrixWorld(!0);
 		let o = new $t().setFromObject(i(`head_${this.member.figure.kind}`), !0);
 		a.add(this.tie), this.tie.position.copy(a.worldToLocal(new W((o.min.x + o.max.x) / 2, o.max.y, (o.min.z + o.max.z) / 2))), t.position.y = -o.max.y, this.scene.add(t), this.root = t, t.updateMatrixWorld(!0), this.box.setFromObject(t, !0), await lp(this.renderer, this.scene, this.camera), this.loaded = !0, this.fit();
@@ -17376,8 +17396,8 @@ var Up = {
 		this.scene.environment?.dispose(), this.renderer.dispose();
 	}
 	update(e, t, n, r) {
-		let i = this.now, a = +!this.reduced, o = { ...Up }, s = V.clamp(t.swing * .16, -.9, .9) * a, c = V.smoothstep(t.pull, 0, 1);
-		if (o.armLRZ = V.lerp(Up.armLRZ, 2.5, c) + s + .05 * Math.sin(i * 1.3) * a, o.armRRZ = V.lerp(Up.armRRZ, -2.5, c) + s + .05 * Math.sin(i * 1.3 + 1.7) * a, t.pointer) {
+		let i = this.now, a = +!this.reduced, o = { ...Gp }, s = V.clamp(t.swing * .16, -.9, .9) * a, c = V.smoothstep(t.pull, 0, 1);
+		if (o.armLRZ = V.lerp(Gp.armLRZ, 2.5, c) + s + .05 * Math.sin(i * 1.3) * a, o.armRRZ = V.lerp(Gp.armRRZ, -2.5, c) + s + .05 * Math.sin(i * 1.3 + 1.7) * a, t.pointer) {
 			let e = this.screen(r.head.getWorldPosition(new W()));
 			o.lookX = V.clamp((t.pointer.x - e.x) / 220, -1, 1), o.lookY = V.clamp(-(t.pointer.y - e.y) / 160, -1, 1);
 		} else a && (o.lookX = .35 * Math.sin(i * .29), o.lookY = -.15 + .1 * Math.sin(i * .41));
@@ -17415,4 +17435,4 @@ var Up = {
 	}
 };
 //#endregion
-export { Wp as CordScene, zp as CrewScene, ip as WorkbenchScene, Xd as markPattern, Rf as placeFace, cp as readModel };
+export { Kp as CordScene, Vp as CrewScene, ip as WorkbenchScene, Xd as markPattern, Rf as placeFace, cp as readModel };
