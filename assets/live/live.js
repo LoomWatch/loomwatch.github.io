@@ -15566,15 +15566,18 @@ var Rf = {
 	job: "job_sheet",
 	app: "laptop_face"
 }, Bf = .72, Vf = {
-	at: new W(.7, .62, -.255),
-	width: .36,
-	depth: .18,
-	step: .045,
-	floor: .06
-}, Hf = new W(0, Vf.floor + .23, Vf.depth / 2 - Vf.depth / 4 / 2), Uf = {
-	at: new W(-.72, 1.03, -1.075),
-	width: .5,
-	pitch: .115
+	bottom: .27,
+	width: .42,
+	height: .18,
+	depth: .32,
+	front: .26,
+	open: .28
+}, Hf = {
+	reads: -.7,
+	tools: .7
+}, Uf = {
+	reads: Array.from({ length: 4 }, (e, t) => new W(0, .016, -.035 - t * .042)),
+	tools: Array.from({ length: 4 }, (e, t) => new W((t - 3 / 2) * .085, .016, -.06 - t % 2 * .03))
 }, Wf = [
 	"#C0342E",
 	"#2F7DD3",
@@ -15639,7 +15642,11 @@ var rp = class {
 		group: null,
 		source: null
 	}));
-	racked = Array.from({ length: 4 }, () => ({
+	drawerOpen = {
+		reads: null,
+		tools: null
+	};
+	stocked = Array.from({ length: 4 }, () => ({
 		group: null,
 		tool: null
 	}));
@@ -15705,7 +15712,7 @@ var rp = class {
 		});
 		for (let e of Xd) this.heads.set(e, this.node(`head_${e}`));
 		for (let [e, t] of Object.entries(zf)) this.faceCorners.set(e, np(this.node(t)));
-		this.scene.add(t), this.buildHolder(), this.buildRack(), t.updateMatrixWorld(!0);
+		this.scene.add(t), this.buildDrawer("reads"), this.buildDrawer("tools"), t.updateMatrixWorld(!0);
 		for (let { key: e, node: t } of Kd) {
 			let n = this.node(`key_${t}`);
 			this.keyHome.set(e, {
@@ -15803,7 +15810,7 @@ var rp = class {
 		let i = `${t.figure.kind}/${t.figure.color}/${Qd(t.figure).join()}`;
 		this.drawn.figure !== i && (this.drawn.figure = i, this.wear(t.figure));
 		for (let { node: e, word: t, key: n } of Kd) this.faces.has(`key_${e}_label`) || this.paint(`key_${e}_label`, Pf(t, n === "commands"));
-		this.node("envelope").visible = t.hasReply || t.mood === "done", this.pinCards(n.skills, e !== null), this.node("reads").visible = !!t.reads, this.fileSources(t.reads ?? [], e !== null), this.node("tools").visible = !!t.tools, this.hangTools(t.tools ?? [], e !== null);
+		this.node("envelope").visible = t.hasReply || t.mood === "done", this.pinCards(n.skills, e !== null), this.node("reads").visible = !!t.reads, this.slideDrawer("reads", !!t.reads?.length, e !== null), this.fileSources(t.reads ?? [], e !== null), this.node("tools").visible = !!t.tools, this.slideDrawer("tools", !!t.tools?.length, e !== null), this.hangTools(t.tools ?? [], e !== null);
 		for (let { key: t } of Kd) {
 			let r = this.node(`key_${Rf[t]}`), i = this.node(n.allow[t] ? `hook_${Rf[t]}` : `dish_${Rf[t]}`);
 			r.parent !== i && this.drag?.key !== t && !this.tweens.some((e) => e.node === r) && this.homeKey(t, !!n.allow[t], e !== null);
@@ -15880,32 +15887,46 @@ var rp = class {
 		}
 		this.tween(e, new W(0, -.4, .2), e.quaternion.clone(), .4, 0, n, !0);
 	}
-	buildHolder() {
-		let e = new At();
-		e.name = "reads", e.position.copy(Vf.at);
-		let t = () => this.material("graphite", "reads"), n = (t, n) => {
-			t.name = n, t.castShadow = !0, t.receiveShadow = !0, e.add(t), this.pickables.push(t), this.roles.set(t, "graphite"), this.disposables.push(t.geometry);
-		}, r = Vf.depth / 4;
-		for (let i = 0; i < 4; i += 1) {
-			let a = Vf.floor + i * Vf.step, o = Vf.depth / 2 - r * (i + .5), s = new X(new ci(Vf.width - .012, a, r), t());
-			s.position.set(0, a / 2, o), n(s, `reads_step_${i + 1}`);
-			let c = new At();
-			c.name = `reads_${i + 1}`, c.position.set(0, a, o), e.add(c), this.nodes.set(c.name, c);
+	buildDrawer(e) {
+		let t = new At();
+		t.name = e, t.position.set(Hf[e], Vf.bottom, Vf.front);
+		let n = new At();
+		n.name = `${e}_drawer`, t.add(n);
+		let r = (t, n, r, i, a, o) => (n.name = `${e}_${r}`, n.position.set(i, a, o), n.castShadow = !0, n.receiveShadow = !0, t.add(n), this.pickables.push(n), this.roles.set(n, "drawer"), this.disposables.push(n.geometry), n), i = (e, t, n, r) => new X(new ci(e, t, n), r), { width: a, height: o, depth: s } = Vf, c = r(t, new X(new Oa(a + .02, o + .02), new Wa({
+			color: "#0C0C10",
+			roughness: 1
+		})), "mouth", 0, o / 2, .001);
+		c.castShadow = !1;
+		let l = r(n, i(a, o, .024, new Ga({
+			color: "#3A3A44",
+			roughness: .5,
+			clearcoat: .35,
+			clearcoatRoughness: .35
+		})), "front", 0, o / 2, .012);
+		r(n, i(.13, .054, .006, this.material("gold", e)), "frame", 0, o * .68, .026), r(n, i(.11, .036, .004, this.material("paper", e)), "card", 0, o * .68, .029), r(n, i(.12, .016, .014, this.material("gold", e)), "pull", 0, o * .3, .044);
+		for (let t of [-.05, .05]) r(n, i(.012, .012, .022, this.material("gold", e)), `post_${t < 0 ? "l" : "r"}`, t, o * .3, .034);
+		let u = () => this.material("graphite", e);
+		r(n, i(a - .03, .008, s, u()), "floor", 0, .012, -s / 2);
+		for (let e of [-1, 1]) r(n, i(.008, o * .7, s, u()), `side_${e < 0 ? "l" : "r"}`, e * (a / 2 - .02), o * .35 + .008, -s / 2);
+		r(n, i(a - .03, o * .7, .008, u()), "back", 0, o * .35 + .008, -s), Uf[e].forEach((t, r) => {
+			let i = new At();
+			i.name = `${e}_${r + 1}`, i.position.copy(t), n.add(i), this.nodes.set(i.name, i);
+		}), this.scene.add(t), t.updateMatrixWorld(!0);
+		for (let e of [
+			t,
+			n,
+			l
+		]) this.nodes.set(e.name, e);
+	}
+	slideDrawer(e, t, n) {
+		if (this.drawerOpen[e] === t) return;
+		this.drawerOpen[e] = t;
+		let r = this.node(`${e}_drawer`), i = new W(0, 0, t ? Vf.open : 0);
+		if (this.tweens = this.tweens.filter((e) => e.node !== r), !n || this.reduced) {
+			r.position.copy(i);
+			return;
 		}
-		let i = new Bi();
-		i.moveTo(Vf.depth / 2, 0), i.lineTo(Vf.depth / 2, Vf.floor + .06), i.lineTo(-Vf.depth / 2, Vf.floor + 3 * Vf.step + .14), i.lineTo(-Vf.depth / 2, 0), i.closePath();
-		for (let [e, r] of [["l", -1], ["r", 1]]) {
-			let a = new X(new wa(i, {
-				depth: .018,
-				bevelEnabled: !0,
-				bevelThickness: .003,
-				bevelSize: .003,
-				bevelSegments: 2,
-				curveSegments: 1
-			}), t());
-			a.rotation.y = -Math.PI / 2, a.position.x = r * Vf.width / 2 + .009, n(a, `reads_side_${e}`);
-		}
-		this.scene.add(e), e.updateMatrixWorld(!0), this.nodes.set(e.name, e);
+		this.tween(r, i, r.quaternion.clone(), .45, 0);
 	}
 	fileSources(e, t) {
 		for (let n = 0; n < 4; n += 1) {
@@ -15939,26 +15960,11 @@ var rp = class {
 		let o = new U().setFromAxisAngle(new W(1, 0, 0), -.12);
 		r.quaternion.copy(o), this.node(`reads_${e + 1}`).add(r);
 		for (let e of i) this.pickables.push(e), this.roles.set(e, "file"), this.disposables.push(e.geometry);
-		return n && !this.reduced && (r.scale.setScalar(.01), r.position.y = .35, this.tween(r, new W(0, 0, 0), o, .5, .04)), r;
-	}
-	buildRack() {
-		let e = new At();
-		e.name = "tools", e.position.copy(Uf.at);
-		let t = (t, n) => {
-			t.name = n, t.castShadow = !0, t.receiveShadow = !0, e.add(t), this.pickables.push(t), this.roles.set(t, "graphite"), this.disposables.push(t.geometry);
-		};
-		t(new X(new ci(Uf.width, .026, .022), this.material("graphite", "tools")), "tools_rail");
-		for (let n = 0; n < 4; n += 1) {
-			let r = (n - 3 / 2) * Uf.pitch, i = new X(new ci(.008, .008, .05), this.material("graphite", "tools"));
-			i.position.set(r, -.022, .03), t(i, `tools_peg_${n + 1}`);
-			let a = new At();
-			a.name = `tools_${n + 1}`, a.position.set(r, -.022, .03), e.add(a), this.nodes.set(a.name, a);
-		}
-		this.scene.add(e), e.updateMatrixWorld(!0), this.nodes.set(e.name, e);
+		return n && !this.reduced && (r.scale.setScalar(.01), r.position.set(0, .25, .2), this.tween(r, new W(0, 0, 0), o, .5, .04)), r;
 	}
 	hangTools(e, t) {
 		for (let n = 0; n < 4; n += 1) {
-			let r = e[n] ?? null, i = this.racked[n];
+			let r = e[n] ?? null, i = this.stocked[n];
 			i.tool !== r && (i.group && this.unpin(i.group, t), i.group = r ? this.wrench(n, t) : null, i.tool = r);
 		}
 	}
@@ -15986,11 +15992,11 @@ var rp = class {
 			color: Wf[e % Wf.length],
 			roughness: .55
 		}));
-		u.name = `tools_${e + 1}_grip`, u.position.set(0, -.12, .003);
+		u.name = `tools_${e + 1}_grip`, u.position.set(0, -.08, .003);
 		let d = new At();
-		d.add(l, u), d.rotation.z = Math.PI, d.position.y = -.188, n.add(d), n.rotation.z = V.degToRad(e * 29 % 5 - 2), this.node(`tools_${e + 1}`).add(n);
+		d.add(l, u), d.position.y = .201, n.add(d), n.rotation.set(-.16, 0, V.degToRad(e * 29 % 9 - 4)), this.node(`tools_${e + 1}`).add(n);
 		for (let e of [l, u]) e.castShadow = !0, this.pickables.push(e), this.roles.set(e, "tool"), this.disposables.push(e.geometry);
-		return t && !this.reduced && (n.scale.setScalar(.01), n.position.z = .25, this.tween(n, new W(0, 0, 0), n.quaternion.clone(), .5, .06)), n;
+		return t && !this.reduced && (n.scale.setScalar(.01), n.position.set(0, .25, .2), this.tween(n, new W(0, 0, 0), n.quaternion.clone(), .5, .06)), n;
 	}
 	homeKey(e, t, n = !0) {
 		let r = this.node(`key_${Rf[e]}`), i = this.node(t ? `hook_${Rf[e]}` : `dish_${Rf[e]}`), a = t ? this.keyHome.get(e) : {
@@ -16153,10 +16159,10 @@ var rp = class {
 					c(this.node("card_3").getWorldPosition(new W())), i.bodyY += .025 * tp(t * 2);
 					break;
 				case "file":
-					c(this.node("reads").getWorldPosition(new W()).add(new W(0, .15, 0))), i.bodyY += .025 * tp(t * 2), this.flashes.set("reads", .5 * (1 - t));
+					c(this.node("reads_drawer").getWorldPosition(new W()).add(new W(0, .15, .1))), i.bodyY += .025 * tp(t * 2), this.flashes.set("reads", .5 * (1 - t));
 					break;
 				case "tool":
-					c(this.node("tools").getWorldPosition(new W()).add(new W(0, -.1, 0))), i.bodyY += .025 * tp(t * 2), this.flashes.set("tools", .5 * (1 - t));
+					c(this.node("tools_drawer").getWorldPosition(new W()).add(new W(0, .15, .1))), i.bodyY += .025 * tp(t * 2), this.flashes.set("tools", .5 * (1 - t));
 					break;
 				case "keyGive":
 					c(this.node("hooks").getWorldPosition(new W())), i.bodyY += .025 * tp(t * 2);
@@ -16250,11 +16256,15 @@ var rp = class {
 				-.12
 			])),
 			skills: this.screen(t),
-			reads: this.screen(e("reads", Hf.toArray())),
-			tools: this.screen(e("tools", [
+			reads: this.screen(e("reads_front", [
 				0,
-				-.25,
-				.03
+				-Vf.height / 2 - .012,
+				.012
+			])),
+			tools: this.screen(e("tools_front", [
+				0,
+				-Vf.height / 2 - .012,
+				.012
 			])),
 			keys: this.screen(e("hooks", [
 				0,
@@ -16270,11 +16280,6 @@ var rp = class {
 				0,
 				.1,
 				-.05
-			])),
-			tray: this.screen(e("tray", [
-				0,
-				-.01,
-				.2
 			]))
 		};
 	}
@@ -16303,8 +16308,8 @@ var rp = class {
 			name: "nameplate",
 			job: "job",
 			skills: "card_3",
-			reads: "reads",
-			tools: "tools",
+			reads: "reads_drawer",
+			tools: "tools_drawer",
 			keys: "hooks",
 			reply: "tray"
 		}[e];
