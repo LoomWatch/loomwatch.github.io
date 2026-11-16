@@ -322,7 +322,7 @@
   // Six agents, each its build's one-body figure in its colour, dressed from the app's wardrobe, as
   // the app draws them, with no job sign. Point at one and it waves; pick one to build one like it.
   // Their stills (assets/crew/<id>.webp) are drawn from the same builds, colours and clothes: keep
-  // the two alike. No figure shows the silk scarf.
+  // the two alike.
   const CREW = [
     { id: 'scout', name: 'Scout', does: 'finds sources', job: 'sources', figure: { kind: 'chubby', color: 'clay', wear: ['trench_coat', 'beret'] } },
     { id: 'writer', name: 'Writer', does: 'writes the brief', job: 'brief', figure: { kind: 'tall', color: 'sky', wear: ['striped_top', 'coffee'] } },
@@ -815,8 +815,7 @@
   ]
   const COLORS = { clay: '#C3693F', sage: '#6A8F6A', sky: '#5C8BB2', lilac: '#8576C7', rose: '#BB687F', orchid: '#AA67BC' }
   // The wardrobe, in the order the app lays its pieces over a still (ui/src/lib/library/figures.ts).
-  // The silk scarf has no layer: as in the app, no still shows it (accessorySpots.ts NO_LAYER).
-  const WEAR_ORDER = ['striped_top', 'cardigan', 'black_dress', 'trench_coat', 'ballet_flats', 'gloves', 'coffee', 'collar', 'beret', 'bow']
+  const WEAR_ORDER = ['striped_top', 'cardigan', 'black_dress', 'trench_coat', 'ballet_flats', 'gloves', 'coffee', 'collar', 'silk_scarf', 'beret', 'bow']
   const figureSrc = (kind, color) => `assets/figures/${kind}-${color}.webp`
   // A figure's still and what it wears, as the app stacks them (FigureStill): the bare still, then a
   // layer per piece worn, in the wardrobe's order. Stills wear no job sign, as in the app.
