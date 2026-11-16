@@ -11,15 +11,15 @@
   <meta property="og:description" content="Put AI agents to work as one team on your Mac or Windows PC, thinking with Claude, GPT, Gemini or any model on OpenRouter. They improve themselves, and you see every step. Free and open source.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://loomwatch.github.io/">
-  <meta property="og:image" content="https://loomwatch.github.io/social-card.jpg?v=14">
+  <meta property="og:image" content="https://loomwatch.github.io/social-card.jpg?v=16">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="LoomWatch: put AI agents to work as one team. Six friendly velvet figures, each with its job’s sign on its head, holding one gold line.">
+  <meta property="og:image:alt" content="LoomWatch: put AI agents to work as one team. Six friendly velvet figures holding one gold line.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="LoomWatch — Put AI agents to work as one team">
   <meta name="twitter:description" content="Put AI agents to work as one team on your Mac or Windows PC, thinking with Claude, GPT, Gemini or any model on OpenRouter. They improve themselves, and you see every step. Free and open source.">
-  <meta name="twitter:image" content="https://loomwatch.github.io/social-card.jpg?v=14">
-  <meta name="twitter:image:alt" content="LoomWatch: put AI agents to work as one team. Six friendly velvet figures, each with its job’s sign on its head, holding one gold line.">
+  <meta name="twitter:image" content="https://loomwatch.github.io/social-card.jpg?v=16">
+  <meta name="twitter:image:alt" content="LoomWatch: put AI agents to work as one team. Six friendly velvet figures holding one gold line.">
   <link rel="canonical" href="https://loomwatch.github.io/">
   <!-- Search results may show the link-preview picture full size. -->
   <meta name="robots" content="max-image-preview:large">
@@ -136,13 +136,39 @@
     </div>
   </div>
   <div class="crew" id="crew">
-    <img class="crew-poster" src="assets/crew/crew.webp" width="2000" height="800" alt="Six friendly velvet figures, each with its job’s sign on its head, holding one gold line." decoding="async">
+    <!-- The live crew's own picture, lying where it will draw (site/crew-poster.mjs makes them), one for
+         each shape of canvas the page has: the media queries guess for the first request, and the script
+         after this section picks by the crew's box itself. -->
+    <picture>
+      <source data-crew="rows" media="not all" srcset="assets/crew/crew-rows.webp" width="1544" height="540">
+      <source data-crew="tall" media="not all" srcset="assets/crew/crew-tall.webp" width="1440" height="266">
+      <source data-crew="narrow" media="(orientation: portrait)" srcset="assets/crew/crew-narrow.webp" width="1170" height="216">
+      <source data-crew="mid" media="(max-width: 1167px)" srcset="assets/crew/crew-mid.webp" width="1952" height="358">
+      <img class="crew-poster" src="assets/crew/crew.webp" width="2240" height="410" alt="Six friendly velvet figures holding one gold line." decoding="async">
+    </picture>
     <canvas class="crew-canvas" id="crew-canvas" aria-hidden="true"></canvas>
     <div class="crew-tags" id="crew-tags" aria-hidden="true"></div>
     <button class="crew-play" id="crew-play" type="button" hidden></button>
   </div>
   <p class="crew-hint" id="crew-hint">Point at one and it waves. <span>Click it to build one like it.</span></p>
 </section>
+<script>
+  // The crew's picture for its box's shape (width : height), which is what the live scene frames the
+  // crew by: drawn at 4.67 (crew.webp), 4.07 (mid), 1.87 (narrow), 1.36 (tall) and 1.14 (rows: under
+  // 1.25 the crew stands in two rows), each used up to halfway, by ratio, to the next. Here, before the
+  // first paint, and again whenever the box changes shape. (site/crew-poster.mjs)
+  (() => {
+    const box = document.getElementById('crew')
+    const sources = [...box.querySelectorAll('source[data-crew]')]
+    const pick = (shape) => (shape < 1.25 ? 'rows' : shape < 1.59 ? 'tall' : shape < 2.76 ? 'narrow' : shape < 4.36 ? 'mid' : 'wide')
+    const fit = () => {
+      const chosen = pick(box.clientWidth / Math.max(1, box.clientHeight))
+      for (const source of sources) source.media = source.dataset.crew === chosen ? 'all' : 'not all'
+    }
+    fit()
+    if ('ResizeObserver' in window) new ResizeObserver(fit).observe(box)
+  })()
+</script>
 
 <div class="story" id="story">
 
@@ -166,7 +192,7 @@
       <div class="win-body ag">
         <div class="ag-stage">
           <div class="bench" id="bench" data-mood="still">
-            <span class="bench-poster figure-still"><img id="ag-img" src="assets/figures/egg-rose.webp" width="320" height="320" alt=""><span class="figure-sign" id="ag-sign" aria-hidden="true" style="--sign: url(&quot;assets/signs/egg-research.webp&quot;); --tint: #FFD0DE"></span><span class="figure-worn" id="ag-worn" aria-hidden="true"><img class="worn" src="assets/wear/egg-black_dress.webp" alt="" decoding="async"><img class="worn" src="assets/wear/egg-collar.webp" alt="" decoding="async"></span></span>
+            <span class="bench-poster figure-still"><img id="ag-img" src="assets/figures/egg-rose.webp" width="320" height="320" alt=""><span class="figure-worn" id="ag-worn" aria-hidden="true"><img class="worn" src="assets/wear/egg-black_dress.webp" alt="" decoding="async"><img class="worn" src="assets/wear/egg-collar.webp" alt="" decoding="async"></span></span>
             <p class="bench-plate"><b id="ag-plate-name">Scout</b><span id="ag-plate-what">a rose square figure</span></p>
             <canvas class="bench-canvas" id="bench-canvas" aria-hidden="true"></canvas>
             <div class="bench-tags" id="bench-tags" aria-hidden="true"></div>

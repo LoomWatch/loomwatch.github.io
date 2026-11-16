@@ -802,7 +802,9 @@ em { font-style: italic; }
 .hero-sub { margin: 20px 0 0; max-width: 640px; color: var(--ink-2); font-size: 17px; line-height: 1.6; text-wrap: pretty; }
 .hero .cta { justify-content: center; margin-top: 26px; }
 .crew { position: relative; width: min(100%, 1120px); min-height: 240px; align-self: stretch; margin-top: 8px; }
-.crew-poster { position: absolute; left: 50%; top: 50%; width: min(100%, 900px); height: auto; transform: translate(-50%, -50%); transition: opacity .6s var(--ease); -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 82%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 82%, transparent 100%); }
+/* The live crew's own picture (site/crew-poster.mjs), over its canvas the way the scene fits the crew
+   to it: across the width, in the middle. So the live crew fades in where the picture stands. */
+.crew-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; transition: opacity .6s var(--ease); }
 .crew-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .8s var(--ease); touch-action: pan-y; }
 .crew.live .crew-canvas { opacity: 1; }
 .crew.live .crew-poster { opacity: 0; }
@@ -848,12 +850,9 @@ em { font-style: italic; }
 .bench { position: relative; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; background: radial-gradient(ellipse 70% 60% at 50% 46%, color-mix(in srgb, var(--fig, var(--accent)) 16%, var(--ground)), var(--ground) 75%); border: 1px solid var(--hairline); }
 .bench-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .7s var(--ease); touch-action: pan-y; }
 .bench.live .bench-canvas { opacity: 1; }
-/* A figure's still with its job's sign on its head, as the app stacks them: the bare still, then the
-   sign's grey picture (--sign) tinted to the figure's colour (--tint), multiplied. */
+/* A figure's still, as the app stacks it: the bare still, then a layer per piece it wears. */
 .figure-still { position: relative; display: inline-block; flex: none; }
 .figure-still > img { display: block; width: 100%; height: 100%; }
-.figure-still > .figure-sign { position: absolute; inset: 0; isolation: isolate; background: var(--tint); -webkit-mask: var(--sign) center / contain no-repeat; mask: var(--sign) center / contain no-repeat; pointer-events: none; }
-.figure-still > .figure-sign::after { content: ''; position: absolute; inset: 0; background: var(--sign) center / contain no-repeat; mix-blend-mode: multiply; }
 .figure-still .worn { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .figure-still > .figure-worn { position: absolute; inset: 0; }
 .bench-poster { position: absolute; left: 50%; top: 44%; width: 48%; height: auto; aspect-ratio: 1; transform: translate(-50%, -50%); transition: opacity .5s var(--ease); -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 78%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 78%, transparent 100%); }
@@ -1081,3 +1080,11 @@ em { font-style: italic; }
 @media (prefers-reduced-motion: reduce) {
   .win-learn .lstep { transition: none !important; }
 }
+
+/* Each build at its true size in the build picker (site/figure-frames.mjs, from figureFrames.json). */
+.ag-kinds img[data-kind="chubby"] { transform-origin: 0 0; transform: translate(14.375%, 22.187%) scale(0.73438); }
+.ag-kinds img[data-kind="tall"] { transform-origin: 0 0; transform: translate(6.406%, 10%) scale(0.87497); }
+.ag-kinds img[data-kind="wide"] { transform-origin: 0 0; transform: translate(8.75%, 13.437%) scale(0.84062); }
+.ag-kinds img[data-kind="little"] { transform-origin: 0 0; transform: translate(15.313%, 25.625%) scale(0.68125); }
+.ag-kinds img[data-kind="egg"] { transform-origin: 0 0; transform: translate(-0.313%, -0.313%) scale(0.99691); }
+.ag-kinds img[data-kind="slim"] { transform-origin: 0 0; transform: translate(3.906%, 6.25%) scale(0.91408); }
