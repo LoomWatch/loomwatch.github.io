@@ -2677,7 +2677,7 @@
     const said = el('span', { class: 'copied', 'aria-live': 'polite' })
     const flash = (text) => { said.textContent = text; window.setTimeout(() => { said.textContent = '' }, 1800) }
     return el('div', { class: 'ans-tools' },
-      el('button', { type: 'button', class: `verdict ${worth.length ? 'warn' : 'ok'}`, text: worth.length ? `${worth.length} thing to check` : 'Nothing flagged', onclick: () => {
+      el('button', { type: 'button', class: `verdict ${worth.length ? 'warn' : 'ok'}`, text: worth.length ? `${worth.length} thing to check` : 'No problems found', onclick: () => {
         const line = $('.slip .worth', resultBody)
         if (!line) return
         line.scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' })
