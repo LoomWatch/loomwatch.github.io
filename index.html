@@ -291,14 +291,65 @@
     </ul>
 
     <div class="answer">
-      <figure class="answer-shot">
-        <img src="assets/app/garden-answer.webp" width="905" height="730" loading="lazy" alt="An answer in the Bake sale team’s chat: if the grant comes through, £230 is left after the shed; without it, £1,270 short. Under it, a calculator to move the numbers, a chart of the shed fund by month, a timeline of the shed plan and a checklist before ordering.">
-        <span class="pin" style="--x: 37.9%; --y: 42.7%" aria-hidden="true">1</span>
-        <span class="pin" style="--x: 82%; --y: 45%" aria-hidden="true">2</span>
-        <span class="pin" style="--x: 42%; --y: 72.4%" aria-hidden="true">3</span>
-        <span class="pin" style="--x: 82%; --y: 74.9%" aria-hidden="true">4</span>
-        <span class="pin" style="--x: 47.9%; --y: 35.1%" aria-hidden="true">5</span>
-        <span class="pin" style="--x: 23.9%; --y: 60.5%" aria-hidden="true">6</span>
+      <!-- The answer itself, working as it does in the app: move the numbers and LoomWatch redoes the
+           sums, point into the chart, follow the plan, tick the list (it keeps), pin it, and ask about
+           any part. main.js makes it move; without it, it reads as drawn. -->
+      <figure class="answer-shot garden always-dark" id="garden" aria-label="An answer in the Bake sale team’s chat, with the parts it brought out: a calculator, a chart, a plan and a checklist. Try them.">
+        <p class="g-q">Can the garden afford the shed by January?</p>
+        <p class="g-a">Yes, if the grant comes through: you’d have <b>£230</b> left. Without it you’re £1,270 short. Move the numbers to try it.</p>
+        <div class="g-grid">
+          <section class="g-w g-calc" aria-labelledby="g-calc-h" data-spot="1">
+            <header><span class="g-kind">Calculator</span><b id="g-calc-h">Can we afford it?</b><span class="g-pinned" id="g-pinned" hidden>On your desktop</span><button type="button" class="g-pin" id="g-pin" aria-pressed="false" aria-label="Pin it to your desktop" data-spot="5"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 1.8h3.6l-.6 4.1 2.6 2.6H4.2l2.6-2.6zM8 8.5v5.7"/></svg></button><span class="pin" style="--x: calc(100% - 6px); --y: 4px" aria-hidden="true">5</span></header>
+            <div class="g-rows">
+              <label class="g-row"><span>Bake sale takings</span><input type="range" class="gold" id="g-takings" min="0" max="1500" step="10" value="620" style="--p: 41.33%"><output id="g-takings-v">£620</output><span class="pin" style="--x: 66%; --y: 50%" aria-hidden="true">1</span></label>
+              <label class="g-row"><span>Saved so far</span><input type="range" id="g-saved" min="0" max="1500" step="10" value="860" style="--p: 57.33%"><output id="g-saved-v">£860</output></label>
+              <div class="g-row"><span id="g-grant-l">Garden grant</span><button type="button" class="g-switch" id="g-grant" role="switch" aria-checked="true" aria-labelledby="g-grant-l"><i></i></button><output id="g-grant-v">£1,500</output></div>
+              <div class="g-row"><span>Shed and base</span><span class="g-cost" aria-hidden="true"><i id="g-cost" style="--w: 100%"></i></span><output id="g-shed-v">−£2,750</output></div>
+            </div>
+            <button type="button" class="g-left" id="g-left" data-ask="left" data-spot="6"><b id="g-left-n">£230</b><span id="g-left-w">left after the shed</span><em>✓ sums by LoomWatch</em><span class="pin" style="--x: 0%; --y: 0%" aria-hidden="true">6</span></button>
+          </section>
+          <section class="g-w g-chart" aria-labelledby="g-chart-h" data-spot="2">
+            <header><span class="g-kind">Chart</span><b id="g-chart-h">Shed fund by month</b></header>
+            <div class="g-plot" id="g-plot">
+              <span class="g-tick" style="--y: 28.57%"><span>£1k</span></span><span class="g-tick" style="--y: 57.14%"><span>£2k</span></span><span class="g-tick" style="--y: 85.71%"><span>£3k</span></span>
+              <span class="g-goal" id="g-goal" style="--y: 78.57%"><em id="g-goal-v">goal £2,750</em></span>
+              <div class="g-bars" id="g-bars">
+                <button type="button" class="g-bar" data-ask="Sep" style="--h: 7.43%"><i></i><span>Sep</span></button>
+                <button type="button" class="g-bar" data-ask="Oct" style="--h: 15.14%"><i></i><span>Oct</span></button>
+                <button type="button" class="g-bar" data-ask="Nov" style="--h: 24.57%"><i></i><span>Nov</span></button>
+                <button type="button" class="g-bar plan" data-ask="Dec" style="--h: 42.29%"><i></i><span>Dec</span></button>
+                <button type="button" class="g-bar plan" data-ask="Jan" style="--h: 85.14%"><i></i><span>Jan</span></button>
+              </div>
+              <p class="g-tip" id="g-tip" hidden></p>
+              <span class="pin" style="--x: 90%; --y: 52%" aria-hidden="true">2</span>
+            </div>
+            <p class="g-key"><span><i></i>saved</span><span class="plan"><i></i>if all goes to plan</span></p>
+          </section>
+          <section class="g-w g-time" aria-labelledby="g-time-h" data-spot="3">
+            <header><span class="g-kind">Timeline</span><b id="g-time-h">Shed plan</b><span class="pin" style="--x: calc(100% - 6px); --y: 4px" aria-hidden="true">3</span></header>
+            <ol class="g-line">
+              <li><button type="button" class="now" data-ask="bake"><i></i><b>6 Dec</b><span>Bake sale</span></button></li>
+              <li><button type="button" data-ask="grant"><i></i><b>15 Dec</b><span>Grant answer</span></button></li>
+              <li><button type="button" data-ask="order"><i></i><b>10 Jan</b><span>Order shed</span></button></li>
+              <li><button type="button" data-ask="build"><i></i><b>24 Jan</b><span>Build day</span></button></li>
+            </ol>
+          </section>
+          <section class="g-w g-check" aria-labelledby="g-check-h" data-spot="4">
+            <header><span class="g-kind">Checklist</span><b id="g-check-h">Before ordering</b><span class="g-count" id="g-count">2 of 4</span><span class="pin" style="--x: calc(100% - 6px); --y: 4px" aria-hidden="true">4</span></header>
+            <ul class="g-list" id="g-list">
+              <li><label><input type="checkbox" checked><span>Measure the base</span></label></li>
+              <li><label><input type="checkbox" checked><span>First quote</span></label></li>
+              <li><label><input type="checkbox"><span>Second quote</span></label></li>
+              <li><label><input type="checkbox"><span>Ask the neighbours</span></label></li>
+            </ul>
+          </section>
+        </div>
+        <p class="g-chips"><span class="g-file"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 6h12M6 2v12"/></svg>Garden budget.xlsx</span><button type="button" class="g-try" id="g-try-grant" aria-pressed="false">Try without the grant</button><button type="button" class="g-try" id="g-try-shed" aria-pressed="false">Cheaper sheds</button></p>
+        <div class="g-ask" id="g-ask" hidden>
+          <button type="button" class="ask-chip" id="g-explain" aria-label="Ask the team about this part: explain it"><span class="g"><span class="ac s m-writer"><i><img src="assets/crew/writer.webp" width="256" height="256" alt=""></i>Writer</span>Ask</span><span>Explain</span><span><span class="fs"><i class="af m-researcher"><img src="assets/crew/researcher.webp" width="256" height="256" alt=""></i><i class="af m-checker"><img src="assets/crew/checker.webp" width="256" height="256" alt=""></i><i class="af m-planner"><img src="assets/crew/planner.webp" width="256" height="256" alt=""></i></span></span></button>
+          <p class="g-reply" id="g-reply" role="status" hidden></p>
+        </div>
+        <p class="sr" id="g-live" aria-live="polite"></p>
       </figure>
       <div class="answer-copy">
         <p class="eyebrow">Brought out · the Bake sale team, a week later</p>
@@ -329,11 +380,11 @@
     <div class="better-grid">
       <ol class="lesson-log" aria-label="Writer learns, in the Bake sale team’s chat">
         <li class="msg reveal">
-          <p class="msg-meta"><span class="who m-checker"><span class="face"><img src="assets/crew/checker.webp" width="256" height="256" alt=""></span>Checker</span><time>Sat 6 Dec · 11:04</time></p>
+          <p class="msg-meta"><i class="af turn-face m-checker"><img src="assets/crew/checker.webp" width="256" height="256" alt=""></i><span class="ac s bare m-checker">Checker</span><time>Sat 6 Dec · 11:04</time></p>
           <p class="msg-bubble"><b class="no">Not met</b> · slide 1’s date doesn’t match the hall’s page.</p>
         </li>
         <li class="msg reveal">
-          <p class="msg-meta"><span class="who m-writer"><span class="face"><img src="assets/crew/writer.webp" width="256" height="256" alt=""></span>Writer</span><time>11:05</time></p>
+          <p class="msg-meta"><i class="af turn-face m-writer"><img src="assets/crew/writer.webp" width="256" height="256" alt=""></i><span class="ac s bare m-writer">Writer</span><time>11:05</time></p>
           <p class="msg-bubble">Fixed: Sunday 7 Dec, as the hall says.</p>
         </li>
         <li class="lesson reveal">
@@ -342,11 +393,11 @@
         </li>
         <li class="log-turn reveal"><span>Next month, in the Spring fair team</span></li>
         <li class="msg reveal">
-          <p class="msg-meta"><span class="who m-writer"><span class="face"><img src="assets/crew/writer.webp" width="256" height="256" alt=""></span>Writer</span><time>Mon 5 Jan</time></p>
+          <p class="msg-meta"><i class="af turn-face m-writer"><img src="assets/crew/writer.webp" width="256" height="256" alt=""></i><span class="ac s bare m-writer">Writer</span><time>Mon 5 Jan</time></p>
           <p class="msg-bubble">The fair is Saturday 14 March. <span class="src">hall’s page</span></p>
         </li>
         <li class="msg reveal">
-          <p class="msg-meta"><span class="who m-checker"><span class="face"><img src="assets/crew/checker.webp" width="256" height="256" alt=""></span>Checker</span><time>Mon 5 Jan</time></p>
+          <p class="msg-meta"><i class="af turn-face m-checker"><img src="assets/crew/checker.webp" width="256" height="256" alt=""></i><span class="ac s bare m-checker">Checker</span><time>Mon 5 Jan</time></p>
           <p class="msg-bubble"><b class="yes">All met</b> on the first go.</p>
         </li>
       </ol>
@@ -393,13 +444,14 @@
         <div class="deck-shot">
           <img src="assets/app/bake-sale-deck.webp" width="1100" height="580" loading="lazy" alt="Bake sale.pptx open on the Mac: slide 1 reads Bake sale, Sat 6 Dec, St Mary’s hall, 10 to 2, and its date line is marked.">
           <span class="deck-mark" aria-hidden="true"></span>
-          <span class="ask-chip always-dark" aria-hidden="true"><span class="face sm m-writer"><img src="assets/crew/writer.webp" width="256" height="256" alt=""></span><b>Ask</b><span class="dot">·</span>Explain<span class="faces"><span class="face xs m-researcher"><img src="assets/crew/researcher.webp" width="256" height="256" alt=""></span><span class="face xs m-checker"><img src="assets/crew/checker.webp" width="256" height="256" alt=""></span></span></span>
+          <span class="ask-chip always-dark" aria-hidden="true"><span class="g"><span class="ac s m-writer"><i><img src="assets/crew/writer.webp" width="256" height="256" alt=""></i>Writer</span>Ask</span><span>Explain</span><span class="fs-part"><span class="fs"><i class="af m-researcher"><img src="assets/crew/researcher.webp" width="256" height="256" alt=""></i><i class="af m-checker"><img src="assets/crew/checker.webp" width="256" height="256" alt=""></i><i class="af m-planner"><img src="assets/crew/planner.webp" width="256" height="256" alt=""></i></span></span></span>
         </div>
       </figure>
       <div class="chat-win glass" role="group" aria-label="The Bake sale team’s group chat">
         <div class="chat-head">
-          <span class="faces" aria-hidden="true"><span class="face m-researcher"><img src="assets/crew/researcher.webp" width="256" height="256" alt=""></span><span class="face m-writer"><img src="assets/crew/writer.webp" width="256" height="256" alt=""></span><span class="face m-checker"><img src="assets/crew/checker.webp" width="256" height="256" alt=""></span></span>
+          <span class="fs chat-stack" id="chat-stack"><button type="button" class="af m-researcher" data-agent="researcher" aria-label="Researcher"><img src="assets/crew/researcher.webp" width="256" height="256" alt=""></button><button type="button" class="af m-writer" data-agent="writer" aria-label="Writer"><img src="assets/crew/writer.webp" width="256" height="256" alt=""></button><button type="button" class="af m-checker" data-agent="checker" aria-label="Checker"><img src="assets/crew/checker.webp" width="256" height="256" alt=""></button></span>
           <b>Bake sale team</b><span>group chat</span>
+          <div class="agent-card" id="agent-card" hidden></div>
         </div>
         <ol class="chat-log">
           <li class="msg mine">
@@ -407,19 +459,19 @@
             <div class="msg-bubble"><p class="quote">Slide 1 · “Sat 6 Dec · St Mary’s hall”</p><p><b class="at">@team</b> is this date right?</p></div>
           </li>
           <li class="msg">
-            <p class="msg-meta"><span class="who m-researcher"><span class="face"><img src="assets/crew/researcher.webp" width="256" height="256" alt=""></span>Researcher</span><time>11:03</time></p>
+            <p class="msg-meta"><i class="af turn-face m-researcher"><img src="assets/crew/researcher.webp" width="256" height="256" alt=""></i><span class="ac s bare m-researcher">Researcher</span><time>11:03</time></p>
             <p class="msg-bubble">The hall’s page says <b>Sunday 7 Dec</b>, 10 to 2. Linked it.</p>
           </li>
           <li class="msg">
-            <p class="msg-meta"><span class="who m-writer"><span class="face"><img src="assets/crew/writer.webp" width="256" height="256" alt=""></span>Writer</span><time>11:04</time></p>
+            <p class="msg-meta"><i class="af turn-face m-writer"><img src="assets/crew/writer.webp" width="256" height="256" alt=""></i><span class="ac s bare m-writer">Writer</span><time>11:04</time></p>
             <p class="msg-bubble">Then the slide is wrong. <b class="at">@you</b> I’ll change it to Sunday; it’s waiting at the notch for your OK.</p>
           </li>
           <li class="msg">
-            <p class="msg-meta"><span class="who m-checker"><span class="face"><img src="assets/crew/checker.webp" width="256" height="256" alt=""></span>Checker</span><time>11:04</time></p>
+            <p class="msg-meta"><i class="af turn-face m-checker"><img src="assets/crew/checker.webp" width="256" height="256" alt=""></i><span class="ac s bare m-checker">Checker</span><time>11:04</time></p>
             <p class="msg-bubble">Checked: the date and the source match.</p>
           </li>
         </ol>
-        <p class="chat-box" aria-hidden="true">Message the team, or @ one agent<span class="send"><svg viewBox="0 0 24 24"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/></svg></span></p>
+        <div class="chat-box" aria-hidden="true"><span class="plus"><svg viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></svg></span><span class="field">Message the team, or @ one agent</span><span class="send"><svg viewBox="0 0 24 24"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/></svg></span></div>
       </div>
     </div>
   </div>

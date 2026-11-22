@@ -96,10 +96,11 @@
   }
   // Two frames along: in a task of its own, after what was asked of the screen before it.
   const nextPaint = () => new Promise((resolve) => window.requestAnimationFrame(() => window.requestAnimationFrame(resolve)))
-  // A scene's files (live.js with three.js, and the figures' models, megabytes) come down only once
-  // its section is near the screen (within 200 px of it) and the page is idle: it has loaded, and the
-  // browser has a moment (or two seconds have gone by). Until then, and where they never come, the
-  // scene's still picture stands in, and the page needs none of them.
+  // A scene's files (live.js with three.js, and the figures' models, megabytes) come down once the
+  // page is idle (it has loaded, and the browser has a moment, or two seconds have gone by) and its
+  // section is near the screen (within 200 px of it), or at once if it loads early: the crew does, so
+  // it is drawn and ready by the time the page is scrolled to it. Until then, and where they never
+  // come, the scene's still picture stands in, and the page needs none of them.
   const pageLoaded = new Promise((resolve) => {
     if (document.readyState === 'complete') resolve()
     else window.addEventListener('load', () => resolve(), { once: true })
@@ -110,28 +111,32 @@
   })
   // The live scenes in the order they come: the crew, then the cord's figure. They make their WebGL
   // contexts and ready their shaders one at a time, each once the one before it has drawn (its
-  // load()) and the page is idle again; of those near the screen then, the first in this order.
+  // load()) and the page is idle again: of those near the screen then, the first in this order, and
+  // when none is, the first that loads early. So the cord's figure, on the first screen, still comes
+  // before the crew further down.
   const liveScenes = []
   let mounting = false
   function nextScene() {
     if (mounting) return
     mounting = true
     pageLoaded.then(idle).then(() => {
-      const scene = liveScenes.find((each) => each.near && !each.started)
+      const scene = liveScenes.find((each) => each.near && !each.started) ?? liveScenes.find((each) => each.early && !each.started)
       if (!scene) { mounting = false; return }
       scene.started = true
       scene.watch?.disconnect()
       return scene.mount().catch(scene.failed).finally(() => { mounting = false; nextScene() })
     })
   }
-  // A scene whose files come down once `box` is near the screen and the page idle (mount), or whose
-  // picture stays if they don't (failed). Near is where it is then: a page opened further down, which
-  // the browser scrolls to after its first look, doesn't count the first screen's scenes as near.
-  // Unless `wanted`, its picture stays and nothing is asked for.
-  function liveScene(box, mount, failed, wanted = true) {
+  // A scene whose files come down once `box` is near the screen and the page idle, or as soon as the
+  // page is idle if it loads `early` (mount), or whose picture stays if they don't (failed). Near is
+  // where it is then: a page opened further down, which the browser scrolls to after its first look,
+  // doesn't count the first screen's scenes as near. Unless `wanted`, its picture stays and nothing
+  // is asked for.
+  function liveScene(box, mount, failed, { wanted = true, early = false } = {}) {
     if (!wanted) { failed(); return }
-    const scene = { near: !('IntersectionObserver' in window), started: false, mount, failed, watch: null }
+    const scene = { near: !('IntersectionObserver' in window), early, started: false, mount, failed, watch: null }
     liveScenes.push(scene)
+    if (early) nextScene()
     if (scene.near) { nextScene(); return }
     scene.watch = new IntersectionObserver((entries) => {
       scene.near = entries.at(-1).isIntersecting
@@ -284,7 +289,8 @@
       else { scene.talk(TALK, { delay: 0.3, loops: 1 }); showSayStatus('playing') }
     })
   }
-  liveScene(crewBox, mountCrew, () => crewBox.classList.add('still'), !thrifty && !reduced)
+  // It loads early, so the crew is ready, not still loading, when the page is scrolled to it.
+  liveScene(crewBox, mountCrew, () => crewBox.classList.add('still'), { wanted: !thrifty && !reduced, early: true })
 
   /* ================================================================ The lamp's pull cord */
 
@@ -631,7 +637,7 @@
   const dropIn = () => { ready = true; wakeCord() }
   // Once the cord is near the screen and the page idle, after the crew if it is near too; as the
   // crew's, never on a thrifty connection or in reduced motion.
-  liveScene(cord, () => mountCord().then(dropIn), dropIn, !thrifty && !reduced)
+  liveScene(cord, () => mountCord().then(dropIn), dropIn, { wanted: !thrifty && !reduced })
   window.setTimeout(dropIn, 6000)
   if (reduced) hang = hangTarget()
   paintCord(0)
@@ -782,6 +788,169 @@
     firstLook.observe(tray)
   }
 
+  /* ================================================================ 3 · What they make */
+
+  // The Bake sale team's answer, working as it does in the app. Move the numbers and LoomWatch redoes
+  // the sums (the result, and the chart: Nov is what is saved, Sep and Oct the way there, Dec adds the
+  // bake sale and Jan the grant, against the shed's cost as the goal). Point into a bar for its
+  // number; tick the list and it keeps (in this browser); pin it; try the suggestions. Pick any part,
+  // a bar, a date or the sum, and the Ask chip comes up under it: Explain has the team say what is
+  // behind it, from today's numbers. The list beside it lights the part each line is about.
+  const garden = $('#garden')
+  const money = (n) => `${n < 0 ? '−' : ''}£${Math.abs(Math.round(n)).toLocaleString('en-GB')}`
+  const GRANT = 1500
+  const SHEDS = { quote: 2750, cheaper: 2100 }
+  const MONTHS = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan']
+  const takings = $('#g-takings')
+  const saved = $('#g-saved')
+  const grant = $('#g-grant')
+  const tryGrant = $('#g-try-grant')
+  const tryShed = $('#g-try-shed')
+  let shed = SHEDS.quote
+  const tens = (n) => Math.round(n / 10) * 10
+  function sums() {
+    const t = Number(takings.value)
+    const s = Number(saved.value)
+    const g = grant.getAttribute('aria-checked') === 'true' ? GRANT : 0
+    return { t, s, g, shed, left: t + s + g - shed, fund: [tens(s * 0.3), tens(s * 0.62), s, s + t, s + t + g] }
+  }
+  // What a bar says, pointed at.
+  const barSays = (month, v) => {
+    const i = MONTHS.indexOf(month)
+    return `${month} · ${money(v.fund[i])}${i > 2 ? ' if all goes to plan' : ' saved'}`
+  }
+  // What the team says about a part, asked to explain it: who says it, and what.
+  const EXPLAIN = {
+    left: (v) => ['checker', `${money(v.t)} from the bake sale + ${money(v.s)} saved${v.g ? ` + the ${money(v.g)} grant` : ''} − ${money(v.shed)} for the shed and base = ${money(Math.abs(v.left))} ${v.left >= 0 ? 'left' : 'short'}.`],
+    Sep: (v) => ['checker', `By the end of September the fund had ${money(v.fund[0])}.`],
+    Oct: (v) => ['checker', `By the end of October, ${money(v.fund[1])}.`],
+    Nov: (v) => ['checker', `${money(v.fund[2])}: what’s saved so far, today.`],
+    Dec: (v) => ['checker', `${money(v.s)} saved, plus ${money(v.t)} from the bake sale on 6 Dec: ${money(v.fund[3])}, if all goes to plan.`],
+    Jan: (v) => ['checker', v.g ? `${money(v.fund[3])}, plus the ${money(v.g)} grant if it comes on 15 Dec: ${money(v.fund[4])}. The goal is ${money(v.shed)}.` : `Without the grant, January stays at ${money(v.fund[4])}, short of the ${money(v.shed)} goal.`],
+    bake: (v) => ['planner', `The bake sale at St Mary’s hall: ${money(v.t)} expected.`],
+    grant: (v) => ['planner', v.g ? `The garden hears about the ${money(GRANT)} grant.` : `The grant answer. Without it, the shed waits for more saving.`],
+    order: (v) => ['planner', v.left >= 0 ? `Order the shed once the fund reaches ${money(v.shed)}.` : `Order the shed: the fund is ${money(-v.left)} short of it.`],
+    build: () => ['planner', 'Build day: the base first, then the shed.'],
+  }
+  const NAMES = { checker: 'Checker', planner: 'Planner' }
+  if (garden) {
+    const plot = $('#g-plot', garden)
+    const bars = $$('.g-bar', garden)
+    const tip = $('#g-tip', garden)
+    const ask = $('#g-ask', garden)
+    const reply = $('#g-reply', garden)
+    const live = $('#g-live', garden)
+    let picked = null
+    let tipped = null
+    let liveTimer = 0
+    function paint(announce = true) {
+      const v = sums()
+      for (const [input, out] of [[takings, '#g-takings-v'], [saved, '#g-saved-v']]) {
+        input.style.setProperty('--p', `${((Number(input.value) - Number(input.min)) / (Number(input.max) - Number(input.min)) * 100).toFixed(2)}%`)
+        $(out, garden).textContent = money(Number(input.value))
+      }
+      $('#g-grant-v', garden).textContent = money(GRANT)
+      $('#g-shed-v', garden).textContent = money(-v.shed)
+      $('#g-cost', garden).style.setProperty('--w', `${(v.shed / SHEDS.quote * 100).toFixed(2)}%`)
+      const left = $('#g-left', garden)
+      left.classList.toggle('short', v.left < 0)
+      $('#g-left-n', garden).textContent = money(Math.abs(v.left))
+      $('#g-left-w', garden).textContent = v.left >= 0 ? 'left after the shed' : 'short for the shed'
+      // The chart's scale: a little over the tallest bar or the goal, to the next £500.
+      const top = Math.max(1000, Math.ceil(Math.max(...v.fund, v.shed) * 1.08 / 500) * 500)
+      const at = (n) => `${(n / top * 100).toFixed(2)}%`
+      bars.forEach((bar, i) => bar.style.setProperty('--h', at(v.fund[i])))
+      $('#g-goal', garden).style.setProperty('--y', at(v.shed))
+      $('#g-goal-v', garden).textContent = `goal ${money(v.shed)}`
+      for (const tick of $$('.g-tick', plot)) tick.remove()
+      for (let n = 1000; n < top; n += 1000) plot.prepend(el('span', { class: 'g-tick', style: `--y: ${at(n)}` }, el('span', { text: `£${n / 1000}k` })))
+      tryGrant.setAttribute('aria-pressed', String(!v.g))
+      tryShed.setAttribute('aria-pressed', String(v.shed === SHEDS.cheaper))
+      if (tipped) showTip(tipped)
+      if (picked && !reply.hidden) explain()
+      window.clearTimeout(liveTimer)
+      if (announce) liveTimer = window.setTimeout(() => { live.textContent = `${money(Math.abs(v.left))} ${v.left >= 0 ? 'left after the shed' : 'short for the shed'}.` }, 400)
+    }
+    function showTip(bar) {
+      tipped = bar
+      tip.textContent = barSays(bar.dataset.ask, sums())
+      const p = plot.getBoundingClientRect()
+      const b = bar.getBoundingClientRect()
+      tip.style.setProperty('--x', `${(b.left + b.width / 2 - p.left).toFixed(1)}px`)
+      tip.style.setProperty('--y', bar.style.getPropertyValue('--h'))
+      tip.hidden = false
+    }
+    const hideTip = () => { tipped = null; tip.hidden = true }
+    for (const bar of bars) {
+      bar.addEventListener('pointerenter', () => showTip(bar))
+      bar.addEventListener('focus', () => showTip(bar))
+      bar.addEventListener('pointerleave', hideTip)
+      bar.addEventListener('blur', hideTip)
+    }
+    function explain() {
+      const [by, says] = EXPLAIN[picked.dataset.ask](sums())
+      reply.replaceChildren(el('span', { class: `ac s m-${by}` }, el('i', {}, el('img', { src: `assets/crew/${by}.webp`, width: '256', height: '256', alt: '' })), NAMES[by]), says)
+      reply.hidden = false
+    }
+    function pick(part) {
+      picked?.classList.remove('picked')
+      picked = part
+      part.classList.add('picked')
+      reply.hidden = true
+      ask.hidden = false
+      // Under the part (a bar's month too), and inside the answer however long the reply.
+      const g = garden.getBoundingClientRect()
+      const r = part.getBoundingClientRect()
+      const under = Math.max(r.bottom, ...[...part.children].map((kid) => kid.getBoundingClientRect().bottom))
+      const wide = Math.min(340, g.width - 24)
+      ask.style.left = `${clamp(r.left - g.left, 12, Math.max(12, g.width - wide - 12)).toFixed(1)}px`
+      ask.style.top = `${(under - g.top + 8).toFixed(1)}px`
+    }
+    function unpick() {
+      picked?.classList.remove('picked')
+      picked = null
+      ask.hidden = true
+    }
+    for (const part of $$('[data-ask]', garden)) part.addEventListener('click', () => (picked === part ? unpick() : pick(part)))
+    $('#g-explain', garden).addEventListener('click', explain)
+    document.addEventListener('pointerdown', (event) => { if (picked && !event.target.closest?.('#g-ask, [data-ask]')) unpick() })
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && picked) unpick() })
+
+    takings.addEventListener('input', paint)
+    saved.addEventListener('input', paint)
+    grant.addEventListener('click', () => { grant.setAttribute('aria-checked', String(grant.getAttribute('aria-checked') !== 'true')); paint() })
+    tryGrant.addEventListener('click', () => { grant.setAttribute('aria-checked', tryGrant.getAttribute('aria-pressed') === 'true' ? 'true' : 'false'); paint() })
+    tryShed.addEventListener('click', () => { shed = shed === SHEDS.cheaper ? SHEDS.quote : SHEDS.cheaper; paint() })
+
+    const pin = $('#g-pin', garden)
+    pin.addEventListener('click', () => {
+      const on = pin.getAttribute('aria-pressed') !== 'true'
+      pin.setAttribute('aria-pressed', String(on))
+      pin.setAttribute('aria-label', on ? 'Pinned to your desktop. Unpin it' : 'Pin it to your desktop')
+      $('#g-pinned', garden).hidden = !on
+    })
+
+    // A checklist that keeps: what is ticked comes back in this browser.
+    const ticks = $$('#g-list input', garden)
+    const count = () => { $('#g-count', garden).textContent = `${ticks.filter((tick) => tick.checked).length} of ${ticks.length}` }
+    try {
+      const kept = JSON.parse(store.get('loomwatch-site-garden-ticks') ?? 'null')
+      if (Array.isArray(kept) && kept.length === ticks.length) ticks.forEach((tick, i) => { tick.checked = Boolean(kept[i]) })
+    } catch { /* kept by an older page */ }
+    for (const tick of ticks) tick.addEventListener('change', () => { count(); store.set('loomwatch-site-garden-ticks', JSON.stringify(ticks.map((each) => each.checked))) })
+    count()
+
+    // The list beside it: a line pointed at lights its part.
+    const spots = { 1: $('#g-takings', garden).closest('.g-row'), 2: $('.g-chart', garden), 3: $('.g-time', garden), 4: $('.g-check', garden), 5: pin, 6: $('#g-left', garden) }
+    $$('.answer-list li').forEach((item, i) => {
+      const spot = spots[i + 1]
+      if (!spot) return
+      item.addEventListener('pointerenter', () => spot.classList.add('spot'))
+      item.addEventListener('pointerleave', () => spot.classList.remove('spot'))
+    })
+    paint(false)
+  }
+
   /* ================================================================ 4 · And it gets better */
 
   // Checker's find, Writer's lesson and the next month's work come in one after another as the
@@ -827,11 +996,73 @@
     // until the section's bottom reaches the window's.
     root.classList.toggle('desk-full', zoom >= 0.7 && box.bottom > window.innerHeight + 1)
   }
+  // The ask arrives at the notch as an event, as in the app: until then it is the plain notch
+  // (styles.css, .notch-wait). Where the desktop grows, the ask comes when it is full (paintZoom);
+  // elsewhere when the notch is in view, once. With reduced motion it is simply there.
+  let notchSeen = !('IntersectionObserver' in window)
+  if (!reduced) {
+    mac.classList.add('notch-wait')
+    if (!notchSeen) {
+      const looking = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return
+        notchSeen = true
+        looking.disconnect()
+        if (!mac.classList.contains('zoom-on')) mac.classList.add('asking')
+      }, { threshold: 0.9 })
+      looking.observe($('.notch', mac))
+    }
+  }
   function fitZoom() {
     const on = !reduced && roomy.matches
     mac.classList.toggle('zoom-on', on)
-    if (!on) { mac.classList.remove('asking'); mac.style.removeProperty('--zoom'); root.classList.remove('desk-full') }
+    if (!on) {
+      mac.style.removeProperty('--zoom')
+      root.classList.remove('desk-full')
+      mac.classList.toggle('asking', notchSeen)
+    }
     paintZoom()
+  }
+  // The team's faces in the group chat's header, as the app's: pointed at or tabbed to, they fan out,
+  // the face comes forward, and its card opens under it a moment later and follows along the row.
+  const stack = $('#chat-stack')
+  const agentCard = $('#agent-card')
+  const CHAT_AGENTS = {
+    researcher: { name: 'Researcher', does: 'Finds the hall’s details', state: ['done', 'Done · linked the hall’s page'] },
+    writer: { name: 'Writer', does: 'Drafts the deck', state: ['waiting', 'Waiting for your OK'] },
+    checker: { name: 'Checker', does: 'Checks every fact', state: ['done', 'Done · all met'] },
+  }
+  if (stack && agentCard) {
+    const head = stack.parentElement
+    let cardTimer = 0
+    function showCard(face) {
+      const id = face.dataset.agent
+      const agent = CHAT_AGENTS[id]
+      agentCard.className = `agent-card m-${id}`
+      agentCard.replaceChildren(
+        el('i', { class: `af m-${id}` }, el('img', { src: `assets/crew/${id}.webp`, width: '256', height: '256', alt: '' })),
+        el('b', { text: agent.name }),
+        el('span', { class: 'does', text: agent.does }),
+        el('span', { class: `state ${agent.state[0]}`, text: agent.state[1] }),
+      )
+      const f = face.getBoundingClientRect()
+      const h = head.getBoundingClientRect()
+      agentCard.style.setProperty('--x', `${(f.left + f.width / 2 - h.left).toFixed(1)}px`)
+      agentCard.hidden = false
+    }
+    const openCard = (face) => {
+      window.clearTimeout(cardTimer)
+      if (!agentCard.hidden) showCard(face)
+      else cardTimer = window.setTimeout(() => showCard(face), 350)
+    }
+    const closeCard = () => { window.clearTimeout(cardTimer); cardTimer = window.setTimeout(() => { agentCard.hidden = true }, 120) }
+    for (const face of $$('.af', stack)) {
+      face.addEventListener('pointerenter', () => openCard(face))
+      face.addEventListener('focus', () => openCard(face))
+      face.addEventListener('click', () => { window.clearTimeout(cardTimer); showCard(face) })
+    }
+    stack.addEventListener('pointerleave', closeCard)
+    stack.addEventListener('focusout', closeCard)
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { window.clearTimeout(cardTimer); agentCard.hidden = true } })
   }
   roomy.addEventListener('change', fitZoom)
   window.addEventListener('scroll', () => { if (!zoomQueued) { zoomQueued = true; window.requestAnimationFrame(paintZoom) } }, { passive: true })

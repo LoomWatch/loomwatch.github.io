@@ -271,6 +271,25 @@ em { font-style: italic; }
 .face.md { width: 34px; height: 34px; }
 .faces { display: inline-flex; align-items: center; }
 .faces .face + .face { margin-left: -6px; }
+/* As the app draws them (the design's chip family): an agent named anywhere is its chip, its face in
+   a ring of its colour and its name in its colour; a face alone is the same face, ring and a gap of
+   what is behind it. The figure's picture is cropped to its head. */
+.ac { --c: var(--m, var(--ink-2)); display: inline-flex; align-items: center; gap: 5px; padding: 1px 9px 1px 2px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); background: color-mix(in srgb, var(--c) 10%, transparent); color: var(--c); font: 500 13px/18px var(--sans); white-space: nowrap; vertical-align: middle; }
+.ac > i { display: block; flex: none; width: 22px; height: 22px; border-radius: 50%; overflow: hidden; background: color-mix(in srgb, var(--c) 15%, var(--face-bg)); box-shadow: 0 0 0 1.5px var(--c); }
+.ac.s { gap: 4px; padding: 0 7px 0 1px; font-size: 11px; line-height: 16px; }
+.ac.s > i { width: 18px; height: 18px; }
+.ac > i img, .af img { display: block; width: 175%; height: 175%; max-width: none; margin: -13% -37.5%; }
+.af { --c: var(--m, var(--ink-3)); position: relative; display: block; flex: none; width: 20px; height: 20px; border-radius: 50%; overflow: hidden; background: color-mix(in srgb, var(--c) 15%, var(--face-bg)); box-shadow: 0 0 0 1.6px var(--c), 0 0 0 3.2px var(--gap, var(--ground)); transition: transform .2s var(--ease), margin .2s var(--ease), opacity .2s var(--ease), filter .2s var(--ease); }
+/* Stacked at rest. Pointed at, they fan out: the face under the pointer comes forward, larger, and
+   the others dim. Without motion they stay stacked, and the face still comes forward. */
+.fs { display: inline-flex; align-items: center; padding: 0 2px; }
+.fs .af + .af { margin-left: -3px; }
+.fs:hover .af + .af, .fs:focus-within .af + .af { margin-left: 6px; }
+.fs:hover .af, .fs:focus-within .af { opacity: .6; filter: saturate(.7); }
+.fs .af:hover, .fs .af:focus-visible, .fs .af.lift { z-index: 3; opacity: 1; filter: none; transform: scale(1.35); box-shadow: 0 0 0 1.5px var(--c), 0 0 0 3px var(--gap, var(--ground)), 0 6px 16px rgb(0 0 0 / .5); outline: none; }
+@media (prefers-reduced-motion: reduce) {
+  .fs:hover .af + .af, .fs:focus-within .af + .af { margin-left: -3px; }
+}
 .m-researcher { --m: var(--m-researcher); }
 .m-writer { --m: var(--m-writer); }
 .m-checker { --m: var(--m-checker); }
@@ -440,8 +459,108 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 .kinds svg { width: 34px; height: 34px; fill: none; stroke: var(--k); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .answer { display: grid; grid-template-columns: minmax(0, 760fr) minmax(0, 500fr); gap: clamp(32px, 4.2vw, 60px); align-items: start; margin-top: 64px; }
 .answer-shot { position: relative; margin: 0; }
-.answer-shot img { width: 100%; border-radius: 18px; border: 1px solid var(--hairline-2); box-shadow: var(--shadow); background: #08080A; }
-.pin { position: absolute; left: var(--x); top: var(--y); width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: #D8A93C; color: #08080A; font: 700 14px/30px var(--sans); text-align: center; box-shadow: 0 0 0 4px rgb(216 169 60 / .25), 0 8px 20px rgb(0 0 0 / .6); }
+.pin { position: absolute; z-index: 4; left: var(--x); top: var(--y); width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; background: #D8A93C; color: #08080A; font: 700 13px/26px var(--sans); text-align: center; box-shadow: 0 0 0 4px rgb(216 169 60 / .25), 0 8px 20px rgb(0 0 0 / .6); pointer-events: none; }
+
+/* The answer, working: the app's chat and the four parts the team brought out, in the app's own dark
+   look in either theme. Each part is the app's: a kind tag and a title over it, numbers in tabular
+   figures, LoomWatch's sums in green (red when short). Two across, one where it is narrow. */
+.garden { container-type: inline-size; padding: 20px 20px 18px; border-radius: 18px; border: 1px solid var(--hairline-2); box-shadow: var(--shadow); background: #08080A; color: var(--ink); font: 400 13px/1.45 var(--sans); --gap: #101013; }
+.garden button { font: inherit; color: inherit; }
+.g-q { width: fit-content; max-width: 80%; margin: 0 0 0 auto; padding: 8px 13px; border-radius: 14px 14px 4px 14px; background: var(--mine-bg); border: 1px solid var(--mine-line); }
+.g-a { width: fit-content; max-width: 88%; margin: 12px 0 0; padding: 8px 13px; border-radius: 14px 14px 14px 4px; background: var(--bubble); }
+.g-a b { color: #4FC98D; }
+.g-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.g-w { position: relative; display: flex; flex-direction: column; border-radius: 14px; border: 1px solid var(--hairline-2); background: #101013; transition: box-shadow .25s var(--ease), border-color .25s var(--ease); }
+.g-w.spot, .garden .spot { border-color: #E9C46A; box-shadow: 0 0 0 1px #E9C46A, 0 0 26px rgb(233 196 106 / .28); }
+.g-w > header { position: relative; display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 12px; border-bottom: 1px solid var(--hairline); }
+.g-kind { padding: 2px 7px; border-radius: 6px; background: rgb(255 255 255 / .06); color: var(--ink-3); font: 500 11px/16px var(--sans); }
+.g-w > header b { font: 600 13px/16px var(--sans); }
+.g-count, .g-pinned { margin-left: auto; color: var(--ink-3); font-size: 12px; }
+.g-pinned { color: #E9C46A; font-weight: 500; }
+.g-pin { display: grid; place-items: center; width: 26px; height: 26px; margin-left: auto; padding: 0; border-radius: 7px; border: 1px solid transparent; background: none; cursor: pointer; }
+.g-pinned + .g-pin { margin-left: 0; }
+.g-pin svg { width: 15px; height: 15px; fill: none; stroke: var(--ink-3); stroke-width: 1.4; stroke-linejoin: round; }
+.g-pin:hover svg { stroke: var(--ink); }
+.g-pin[aria-pressed="true"] { border-color: rgb(233 196 106 / .5); background: #1A1508; }
+.g-pin[aria-pressed="true"] svg { stroke: #E9C46A; fill: rgb(233 196 106 / .3); }
+
+.g-rows { display: grid; gap: 4px; padding: 10px 12px 4px; }
+.g-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(64px, 104px) 56px; align-items: center; gap: 10px; min-height: 26px; color: var(--ink-2); font-size: 12.5px; }
+.g-row output { color: var(--ink); font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.g-row input[type="range"] { --on: #85817A; width: 100%; height: 18px; margin: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
+.g-row input.gold { --on: #E9C46A; }
+.g-row input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--on) var(--p, 50%), rgb(255 255 255 / .12) var(--p, 50%)); }
+.g-row input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--on) var(--p, 50%), rgb(255 255 255 / .12) var(--p, 50%)); }
+.g-row input[type="range"]::-webkit-slider-thumb { width: 14px; height: 14px; margin-top: -5px; border-radius: 50%; background: #F5F3EE; box-shadow: 0 1px 4px rgb(0 0 0 / .6); -webkit-appearance: none; appearance: none; }
+.g-row input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: #F5F3EE; box-shadow: 0 1px 4px rgb(0 0 0 / .6); }
+.garden :focus-visible { outline: 2px solid #E9C46A; outline-offset: 2px; border-radius: 6px; }
+.g-switch { position: relative; justify-self: end; width: 34px; height: 20px; padding: 0; border-radius: 999px; border: 1px solid #E9C46A; background: rgb(233 196 106 / .22); cursor: pointer; transition: background .2s var(--ease), border-color .2s var(--ease); }
+.g-switch i { position: absolute; top: 2px; left: 15px; width: 14px; height: 14px; border-radius: 50%; background: #E9C46A; transition: left .2s var(--ease), background .2s var(--ease); }
+.g-switch[aria-checked="false"] { border-color: rgb(255 255 255 / .25); background: transparent; }
+.g-switch[aria-checked="false"] i { left: 2px; background: #85817A; }
+.g-switch[aria-checked="false"] + output { color: var(--ink-3); text-decoration: line-through; }
+.g-cost { height: 4px; border-radius: 2px; background: rgb(255 255 255 / .12); }
+.g-cost i { display: block; width: var(--w, 100%); height: 100%; border-radius: 2px; background: #F08A80; transition: width .3s var(--ease); }
+.g-left { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; margin: 8px 12px 12px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgb(79 201 141 / .45); background: rgb(79 201 141 / .08); color: var(--ink-2); text-align: left; cursor: pointer; }
+.g-left b { color: #4FC98D; font: 700 24px/1 var(--sans); font-variant-numeric: tabular-nums; }
+.g-left > span:not(.pin) { font-size: 12px; line-height: 1.3; }
+.g-left em { color: #4FC98D; font-size: 11.5px; font-style: normal; white-space: nowrap; }
+.g-left.short { border-color: rgb(240 138 128 / .5); background: rgb(240 138 128 / .08); }
+.g-left.short b, .g-left.short em { color: #F08A80; }
+
+.g-plot { position: relative; height: 150px; margin: 14px 12px 0 42px; border-bottom: 1px solid var(--hairline-2); }
+.g-tick { position: absolute; left: 0; right: 0; bottom: var(--y); border-top: 1px solid rgb(255 255 255 / .05); }
+.g-tick span { position: absolute; left: -38px; top: -8px; color: var(--ink-3); font-size: 10.5px; font-variant-numeric: tabular-nums; }
+.g-goal { position: absolute; z-index: 1; left: 0; right: 0; bottom: var(--y); border-top: 1px dashed #4FC98D; pointer-events: none; transition: bottom .35s var(--ease); }
+.g-goal em { position: absolute; left: 4px; bottom: 2px; color: #4FC98D; font-size: 10.5px; font-style: normal; }
+.g-bars { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: space-around; gap: 8px; padding: 0 4px; }
+.g-bar { position: relative; flex: 1; display: flex; align-items: flex-end; max-width: 36px; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
+.g-bar i { display: block; width: 100%; height: var(--h); min-height: 2px; border-radius: 4px 4px 0 0; background: #6AB8FF; transition: height .35s var(--ease); }
+.g-bar.plan i { border: 1px dashed #6AB8FF; border-bottom: 0; background: rgb(106 184 255 / .16); }
+.g-bar > span { position: absolute; top: 100%; left: 50%; margin-top: 5px; color: var(--ink-3); font-size: 11px; translate: -50% 0; }
+.g-bar:hover i, .g-bar.picked i { box-shadow: 0 0 0 2px #E9C46A; }
+.g-tip { position: absolute; z-index: 6; left: var(--x); bottom: calc(var(--y) + 8px); margin: 0; padding: 4px 9px; border-radius: 7px; background: #131316; border: 1px solid rgb(255 255 255 / .16); color: #F5F3EE; font-size: 11.5px; white-space: nowrap; translate: -50% 0; pointer-events: none; }
+.g-key { display: flex; gap: 14px; margin: 28px 12px 12px; color: var(--ink-3); font-size: 11.5px; }
+.g-key span { display: inline-flex; align-items: center; gap: 5px; }
+.g-key i { width: 9px; height: 9px; border-radius: 2px; background: #6AB8FF; }
+.g-key .plan { color: #6AB8FF; }
+.g-key .plan i { border: 1px dashed #6AB8FF; background: rgb(106 184 255 / .16); }
+
+.g-line { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; padding: 16px 6px 14px; list-style: none; }
+.g-line::before { content: ''; position: absolute; left: 12.5%; right: 12.5%; top: 23px; height: 2px; background: rgb(255 255 255 / .12); }
+.g-line button { position: relative; display: grid; justify-items: center; gap: 1px; width: 100%; padding: 0; border: 0; border-radius: 8px; background: none; color: var(--ink-2); font-size: 11.5px; line-height: 1.3; cursor: pointer; }
+.g-line i { width: 14px; height: 14px; margin-bottom: 7px; border-radius: 50%; border: 2px solid #6AB8FF; background: #101013; transition: transform .2s var(--ease); }
+.g-line .now i { border-color: #E9C46A; background: #E9C46A; }
+.g-line button:hover i, .g-line .picked i { transform: scale(1.3); }
+.g-line b { color: var(--ink); font: 600 12px/1.3 var(--sans); }
+
+.g-list { display: grid; gap: 7px; margin: 0; padding: 11px 12px 13px; list-style: none; }
+.g-list label { display: flex; align-items: center; gap: 9px; color: var(--ink); font-size: 12.5px; cursor: pointer; }
+.g-list input { display: grid; place-items: center; flex: none; width: 16px; height: 16px; margin: 0; border-radius: 4px; border: 1.5px solid rgb(255 255 255 / .35); cursor: pointer; -webkit-appearance: none; appearance: none; }
+.g-list input:checked { border-color: #4FC98D; background: #4FC98D; }
+.g-list input:checked::after { content: ''; width: 8px; height: 4px; border: solid #08080A; border-width: 0 0 2px 2px; rotate: -45deg; translate: 0 -1px; }
+.g-list input:checked + span { color: var(--ink-3); text-decoration: line-through; }
+
+.g-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; }
+.g-file, .g-try { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; border: 1px solid rgb(255 255 255 / .14); background: #131316; color: var(--ink); font: 500 12px/16px var(--sans); }
+.g-file { border-radius: 8px; padding-left: 6px; }
+.g-file svg { width: 15px; height: 15px; fill: none; stroke: #4FC98D; stroke-width: 1.4; }
+.g-try { cursor: pointer; transition: border-color .2s var(--ease), color .2s var(--ease); }
+.g-try:hover, .g-try[aria-pressed="true"] { border-color: rgb(233 196 106 / .6); color: #E9C46A; }
+.g-try[aria-pressed="true"] { background: #1A1508; }
+
+/* Ask about any part: pick one (a bar, a date, the sum) and the Ask chip comes up under it, as in
+   the app; Explain has the team say what is behind it, from today's numbers. */
+.g-ask { position: absolute; z-index: 5; display: grid; justify-items: start; gap: 8px; width: max-content; max-width: min(340px, calc(100% - 24px)); }
+.g-ask .ask-chip { cursor: pointer; }
+.g-ask .ask-chip:hover { border-color: #E9C46A; }
+.g-reply { margin: 0; padding: 9px 12px; border-radius: 12px; background: #131316; border: 1px solid rgb(255 255 255 / .12); box-shadow: 0 14px 34px rgb(0 0 0 / .55); color: var(--ink); font-size: 12.5px; line-height: 1.5; }
+.g-reply .ac { margin-right: 6px; }
+.garden .picked:not(.g-bar):not(button.now):not(.g-line button) { outline: 2px solid #E9C46A; outline-offset: 2px; }
+
+@container (max-width: 560px) {
+  .g-grid { grid-template-columns: minmax(0, 1fr); }
+}
 .eyebrow { margin: 10px 0 0; font: 600 11px/1.4 var(--sans); letter-spacing: .07em; text-transform: uppercase; color: var(--accent); }
 .answer-copy h3 { margin: 12px 0 0; font: 400 clamp(26px, 2.4vw, 34px)/1.15 var(--serif); text-wrap: balance; }
 .answer-list { list-style: none; counter-reset: pin; margin: 26px 0 0; padding: 0; display: grid; gap: 18px; }
@@ -454,9 +573,12 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 
 .better-grid { display: grid; grid-template-columns: minmax(0, 700px) minmax(0, 450px); justify-content: space-between; gap: 48px; margin-top: 72px; padding: 0 clamp(0px, 3.5vw, 50px); align-items: start; }
 .lesson-log { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+/* An agent's turn, as the app's chat draws it: its face, its name as a bare chip, and the time; the
+   bubble under it, its corner by the face. */
 .msg-meta { display: flex; align-items: center; gap: 8px; margin: 0; font: 500 11.5px/1 var(--sans); color: var(--ink-3); }
-.who { display: inline-flex; align-items: center; gap: 7px; font: 700 13px/1 var(--sans); color: var(--m); }
-.msg-bubble { margin: 6px 0 0 33px; max-width: 400px; padding: 10px 13px; border-radius: 14px; background: var(--bubble); color: var(--ink); font-size: 14px; line-height: 1.45; }
+.turn-face { width: 26px; height: 26px; --gap: transparent; }
+.ac.bare { padding-left: 8px; }
+.msg-bubble { margin: 6px 0 0 34px; max-width: 400px; padding: 8px 13px 9px; border-radius: 5px 18px 18px 18px; background: var(--bubble); color: var(--ink); font-size: 14px; line-height: 1.5; }
 .msg-bubble p { margin: 0; }
 .no { color: var(--alert); }
 .yes { color: var(--ok); }
@@ -508,27 +630,50 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 .win-dots i:nth-child(3) { background: #28c840; }
 .win-dots span { margin-left: 12px; font: 600 13px/1 var(--sans); }
 .deck-shot { position: relative; }
-.deck-shot img { width: 100%; }
+.deck-shot > img { width: 100%; } /* the deck's picture only, not the Ask chip's faces over it */
 .deck-mark { position: absolute; left: 25%; top: 41.6%; width: 38.6%; height: 7.6%; border: 2px solid #E9C46A; border-radius: 6px; background: rgb(233 196 106 / .12); box-shadow: 0 0 0 4px rgb(233 196 106 / .15); }
 /* The Ask chip floats under the selected date line the way the app's does, over the slide's pink
    "Gluten-free table" pill (54.1% to 62.4% of the picture down). Its bottom edge is set just past the
    pill's, whatever the picture's size: a chip that covered only part of the pill left a strip of pink
    showing under it, like a shadow drawn wrong. */
-.ask-chip { position: absolute; left: 25%; bottom: 36.8%; display: flex; align-items: center; gap: 9px; padding: 5px 12px 5px 5px; border-radius: 999px; background: #131316; border: 1px solid rgb(233 196 106 / .55); box-shadow: 0 14px 34px rgb(0 0 0 / .7); color: #F5F3EE; font: 600 13px/1 var(--sans); white-space: nowrap; --face-gap: #131316; }
-.ask-chip b { color: #E9C46A; font-weight: 600; }
-.ask-chip .dot { color: #85817A; }
+/* The design's Ask chip: Ask with the agent who made the file, Explain, and the other agents' faces,
+   in three parts on a gold edge. */
+.deck-shot .ask-chip { position: absolute; left: 25%; bottom: 36.8%; }
+.ask-chip { display: inline-flex; padding: 0; font: inherit; text-align: left; align-items: center; border-radius: 999px; background: #16130B; border: 1px solid rgb(233 196 106 / .7); box-shadow: 0 10px 30px rgb(0 0 0 / .55), 0 0 0 4px rgb(233 196 106 / .08); white-space: nowrap; --gap: #16130B; }
+.ask-chip > span { display: inline-flex; align-items: center; gap: 6px; padding: 8px 11px; font: 500 12px/16px var(--sans); color: #F5F3EE; }
+.ask-chip > span + span { border-left: 1px solid rgb(233 196 106 / .3); }
+.ask-chip > .g { padding-left: 5px; color: #E9C46A; font-weight: 600; }
+.ask-chip > span:last-child { padding-right: 12px; }
 .chat-win { grid-column: 2; grid-row: 1 / span 2; display: flex; flex-direction: column; min-height: 640px; margin-top: 30px; overflow: hidden; }
-.chat-head { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--hairline); }
+.chat-head { position: relative; display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--hairline); }
 .chat-head b { font: 600 14px/1 var(--sans); }
-.chat-head > span:last-child { font: 500 12px/1 var(--sans); color: var(--ink-3); }
+.chat-head > b + span { font: 500 12px/1 var(--sans); color: var(--ink-3); }
+/* The team's faces, stacked; pointed at, they fan out and the face's card opens under it (main.js). */
+.chat-stack { padding: 0 4px; }
+.chat-stack .af { width: 26px; height: 26px; padding: 0; border: 0; --gap: var(--panel-solid); cursor: pointer; }
+.agent-card { position: absolute; z-index: 6; top: calc(100% - 6px); left: var(--x, 18px); display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 4px 11px; width: 260px; padding: 13px 14px; border-radius: 14px; background: var(--panel-solid); border: 1px solid var(--hairline-2); box-shadow: var(--card-shadow), 0 18px 40px rgb(0 0 0 / .25); translate: -30px 0; }
+.agent-card::before { content: ''; position: absolute; top: -6px; left: 25px; width: 10px; height: 10px; background: var(--panel-solid); border-left: 1px solid var(--hairline-2); border-top: 1px solid var(--hairline-2); rotate: 45deg; }
+.agent-card .af { grid-row: span 2; width: 40px; height: 40px; --gap: var(--panel-solid); }
+.agent-card b { color: var(--m); font: 700 15px/1.2 var(--sans); }
+.agent-card .does { color: var(--ink-2); font-size: 12.5px; line-height: 1.35; }
+.agent-card .state { grid-column: 1 / -1; display: inline-flex; align-items: center; gap: 6px; justify-self: start; margin-top: 6px; padding: 3px 9px 3px 8px; border-radius: 999px; font: 500 11.5px/16px var(--sans); }
+.agent-card .state::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.agent-card .state.done { color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
+.agent-card .state.waiting { color: var(--accent); background: var(--accent-tint); }
 .chat-log { list-style: none; flex: 1; display: grid; gap: 16px; align-content: start; margin: 0; padding: 18px; }
 .msg.mine { justify-self: end; display: grid; justify-items: end; max-width: 400px; }
-.mine .msg-bubble { margin: 6px 0 0; background: var(--mine-bg); border: 1px solid var(--mine-line); }
+.mine .msg-bubble { margin: 6px 0 0; border-radius: 18px 5px 18px 18px; background: var(--mine-bg); border: 1px solid var(--mine-line); }
 .quote { margin: 0 0 6px !important; padding: 4px 8px; border-left: 2px solid var(--accent); color: var(--accent); font: 500 12px/1.3 var(--sans); }
 .at { color: var(--accent); font-weight: 600; }
-.chat-box { display: flex; align-items: center; gap: 10px; margin: 14px; padding: 10px 14px; border-radius: 14px; background: var(--panel-solid); border: 1px solid var(--hairline-2); color: var(--ink-3); font-size: 14px; }
-.chat-box .send { flex: none; display: grid; place-items: center; width: 30px; height: 30px; margin-left: auto; border-radius: 50%; background: var(--accent-fill); }
-.chat-box .send svg { width: 16px; height: 16px; fill: none; stroke: var(--accent-on-fill); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+/* The app's message box: + for files, the field, and the send circle, faint while there is nothing
+   to send. */
+.chat-box { display: flex; align-items: center; gap: 8px; margin: 0; padding: 12px 14px; border-top: 1px solid var(--hairline); color: var(--ink-3); font-size: 14px; }
+.chat-box .plus, .chat-box .send { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; }
+.chat-box .plus { background: var(--panel-solid); border: 1px solid var(--hairline-2); }
+.chat-box .field { flex: 1; min-width: 0; padding: 7px 14px; border-radius: 18px; background: var(--panel-solid); border: 1px solid var(--hairline-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 18px; }
+.chat-box .send { background: var(--accent-fill); opacity: .45; }
+.chat-box svg { width: 16px; height: 16px; fill: none; stroke: var(--ink-2); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.chat-box .send svg { stroke: var(--accent-on-fill); stroke-width: 2.4; }
 
 /* Scrolled to on a screen big enough for it, the desktop comes up as a Mac's screen on the page and
    grows until it fills the whole window, the page's header sliding away meanwhile, so its menu bar
@@ -549,10 +694,26 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 .desk-full .top { translate: 0 calc(-100% - 4px); } /* past its reading line too, which hangs below it */
 .mac.zoom-on .desk-grid { flex: 1; min-height: 0; width: 100%; grid-template-rows: auto auto; align-content: center; padding-top: 126px; padding-bottom: 24px; }
 .mac.zoom-on .chat-win { min-height: 0; height: min(640px, calc(var(--stage) - 180px)); margin-top: 0; }
-.mac.zoom-on .notch { clip-path: inset(-40px round 0 0 40px 40px); transition: clip-path .55s var(--ease), box-shadow .55s var(--ease); }
-.mac.zoom-on .notch > * { transition: opacity .3s var(--ease) .25s; }
-.mac.zoom-on:not(.asking) .notch { clip-path: inset(0 115px 108px round 0 0 14px 14px); box-shadow: none; }
-.mac.zoom-on:not(.asking) .notch > * { opacity: 0; transition-delay: 0s; }
+
+/* The ask arrives at the notch as the app's island brings one. The black grows out of the plain notch
+   on the app's spring (its --ease-spring over 560 ms: a little past full, then back), the words come
+   a moment after, and the Writer drops in on it and swings to rest. main.js holds the notch closed
+   (.notch-wait) until the ask arrives (.asking): when the desktop has grown to fill the window, or,
+   where it doesn't grow, when the notch comes into view. Without the script, or with reduced motion,
+   the notch is simply open. */
+.mac.notch-wait .notch { transform-origin: 50% 0; transition: scale .56s cubic-bezier(.32, 1.36, .5, 1), box-shadow .4s var(--ease) .12s; }
+.mac.notch-wait .notch > * { transition: opacity .22s var(--ease) .16s, translate .22s var(--ease) .16s; }
+.mac.notch-wait:not(.asking) .notch { scale: .4 .23; box-shadow: none; transition: scale .3s cubic-bezier(.3, 0, .8, .15), box-shadow .1s; }
+.mac.notch-wait:not(.asking) .notch > * { opacity: 0; translate: 0 -6px; transition-duration: .08s; transition-delay: 0s; }
+.mac.notch-wait.asking .notch img { transform-origin: 50% 0; animation: notch-drop 1.3s var(--ease) .2s both; }
+@keyframes notch-drop {
+  0% { translate: 0 -16px; rotate: 0deg; }
+  26% { translate: 0 2px; rotate: 5deg; }
+  40% { translate: 0 0; }
+  52% { rotate: -3.5deg; }
+  74% { rotate: 1.5deg; }
+  100% { translate: 0 0; rotate: 0deg; }
+}
 
 /* ---------------------------------------------------------------- 6 · On the iPhone */
 
@@ -665,7 +826,7 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
   .kinds { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   /* The deck's picture is smaller here, so the chip draws smaller too, still covering the slide's pill,
      and a gap stays between it and the selected line. */
-  .ask-chip { scale: .86; transform-origin: 0 100%; }
+  .deck-shot .ask-chip { scale: .86; transform-origin: 0 100%; }
   .better-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 400px); padding: 0; }
   .safe-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .safe-grid > li { min-height: 0; }
@@ -713,7 +874,10 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 @media (max-width: 760px) {
   /* A phone's hand: the cards in a row to scroll through, upright, each one tapped to add it. */
   .fan { justify-content: flex-start; gap: 14px; margin: 0 calc(-1 * var(--gutter)); padding: 28px var(--gutter) 30px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 var(--gutter); overscroll-behavior-x: contain; }
-  .hire-card { --w: 216px; margin: 0; transform: none; scroll-snap-align: center; }
+  /* The cards are a row that scrolls sideways here: a finger on a card pans it either way (and can
+     pinch), where pan-y alone let only the gaps between cards scroll the row. A finger never drags a
+     card (main.js leaves touch to taps), so nothing needs the sideways pan held back. */
+  .hire-card { --w: 216px; margin: 0; transform: none; scroll-snap-align: center; touch-action: manipulation; }
   button.hire-card:hover { transform: none; }
   .tray { margin-top: 18px; padding: 22px 18px; border-radius: 22px; }
   .tray-slots { flex-direction: column; align-items: stretch; }
@@ -733,13 +897,13 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
   .answer-list { grid-template-columns: minmax(0, 1fr); }
   .pin { width: 24px; height: 24px; margin: -12px 0 0 -12px; font-size: 12px; line-height: 24px; }
   .lesson, .log-turn { margin-left: 0; }
-  .msg-bubble { margin-left: 33px; }
+  .msg-bubble { margin-left: 34px; }
   .desk-grid { padding: 164px var(--gutter) 0; }
   .notch { width: calc(100% - 2 * var(--gutter)); padding: 24px 16px 14px; min-height: 0; gap: 12px; }
   .notch img { width: 60px; }
   .menubar span:not(.menubar-clock) { display: none; }
   .safe-grid { grid-template-columns: minmax(0, 1fr); }
-  .ask-chip { bottom: 6px; left: 50%; translate: -50% 0; scale: .9; transform-origin: 50% 100%; }
+  .deck-shot .ask-chip { bottom: 6px; left: 50%; translate: -50% 0; scale: .9; transform-origin: 50% 100%; }
 }
 
 @media (max-width: 640px) {
