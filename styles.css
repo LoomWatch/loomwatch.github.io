@@ -355,6 +355,10 @@ button.hire-card:hover { transform: translateY(calc(var(--lift, 0px) - 14px)) ro
 .slot { position: relative; display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; height: 112px; padding: 0 14px; border-radius: 16px; border: 1px solid var(--hairline-2); background: var(--panel-solid); color: var(--ink); font: 400 21px/1.1 var(--serif); text-align: left; }
 .slot img { flex: none; width: 62px; height: 62px; }
 .slot-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* All four on the team: no place for one more, so each slot draws a little smaller and its name fits. */
+.tray-slots[data-full] li + li::before { padding: 0 8px; }
+.tray-slots[data-full] .slot { gap: 8px; padding: 0 12px; font-size: 19px; }
+.tray-slots[data-full] .slot img { width: 50px; height: 50px; }
 .slot.hot { border-color: color-mix(in srgb, var(--accent-fill) 75%, transparent); }
 button.slot { cursor: pointer; }
 .slot-x { position: absolute; top: 8px; right: 10px; font: 500 15px/1 var(--sans); color: var(--ink-3); opacity: 0; transition: opacity .15s var(--ease); }
@@ -392,7 +396,10 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 .crew-tag b { font-weight: 600; }
 @keyframes tag-in { from { opacity: 0; translate: -50% calc(-100% - 2px); } }
 /* The crew's conversation: one bubble over the one talking, its tail pointing at its head. */
-.crew-say { position: absolute; left: 0; top: 0; margin: 0; width: max-content; max-width: min(340px, calc(100% - 12px)); text-wrap: balance; translate: -50% calc(-100% - 16px); padding: 8px 14px; border-radius: 14px; background: var(--slip); color: var(--slip-ink); box-shadow: 0 0 0 1px var(--hairline-2), var(--shadow); font-size: 15px; line-height: 1.35; animation: tag-in .25s var(--ease) 1; }
+/* Wide enough that each line the crew says fits on one line on a desktop; where it must wrap, it
+   wraps plainly. (text-wrap: balance shortened both lines but left the box at its full width, an
+   empty strip on the right.) */
+.crew-say { position: absolute; left: 0; top: 0; margin: 0; width: max-content; max-width: min(440px, calc(100% - 12px)); translate: -50% calc(-100% - 16px); padding: 8px 14px; border-radius: 14px; background: var(--slip); color: var(--slip-ink); box-shadow: 0 0 0 1px var(--hairline-2), var(--shadow); font-size: 15px; line-height: 1.35; animation: tag-in .25s var(--ease) 1; }
 .crew-say::after { content: ''; position: absolute; left: calc(50% + var(--tail, 0px)); bottom: -6px; width: 12px; height: 12px; background: inherit; border-radius: 0 0 3px 0; transform: translateX(-50%) rotate(45deg); }
 .crew-say b { font-weight: 600; }
 .crew-say.waiting { border-radius: 999px; box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent), var(--shadow); font-weight: 500; }
@@ -426,7 +433,10 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 /* ---------------------------------------------------------------- 3 · What they make */
 
 .kinds { list-style: none; margin: 56px 0 0; padding: 0; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 12px; }
-.kinds li { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 18px 8px; border-radius: 16px; background: var(--panel); border: 1px solid var(--hairline); font: 600 13px/1.2 var(--sans); text-align: center; }
+/* Each kind wears a glowing ring in its own colour, as the notch does: a fine edge with a soft glow
+   round it, a little stronger under the pointer. */
+.kinds li { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 18px 8px; border-radius: 16px; background: var(--panel); border: 1px solid color-mix(in srgb, var(--k) 70%, transparent); box-shadow: 0 0 9px color-mix(in srgb, var(--k) 32%, transparent), 0 0 26px color-mix(in srgb, var(--k) 12%, transparent); font: 600 13px/1.2 var(--sans); text-align: center; transition: box-shadow .25s var(--ease), border-color .25s var(--ease); }
+.kinds li:hover { border-color: var(--k); box-shadow: 0 0 12px color-mix(in srgb, var(--k) 50%, transparent), 0 0 34px color-mix(in srgb, var(--k) 20%, transparent); }
 .kinds svg { width: 34px; height: 34px; fill: none; stroke: var(--k); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .answer { display: grid; grid-template-columns: minmax(0, 760fr) minmax(0, 500fr); gap: clamp(32px, 4.2vw, 60px); align-items: start; margin-top: 64px; }
 .answer-shot { position: relative; margin: 0; }
@@ -500,7 +510,11 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 .deck-shot { position: relative; }
 .deck-shot img { width: 100%; }
 .deck-mark { position: absolute; left: 25%; top: 41.6%; width: 38.6%; height: 7.6%; border: 2px solid #E9C46A; border-radius: 6px; background: rgb(233 196 106 / .12); box-shadow: 0 0 0 4px rgb(233 196 106 / .15); }
-.ask-chip { position: absolute; left: 25%; top: 50.6%; display: flex; align-items: center; gap: 9px; padding: 5px 12px 5px 5px; border-radius: 999px; background: #131316; border: 1px solid rgb(233 196 106 / .55); box-shadow: 0 14px 34px rgb(0 0 0 / .7); color: #F5F3EE; font: 600 13px/1 var(--sans); white-space: nowrap; --face-gap: #131316; }
+/* The Ask chip floats under the selected date line the way the app's does, over the slide's pink
+   "Gluten-free table" pill (54.1% to 62.4% of the picture down). Its bottom edge is set just past the
+   pill's, whatever the picture's size: a chip that covered only part of the pill left a strip of pink
+   showing under it, like a shadow drawn wrong. */
+.ask-chip { position: absolute; left: 25%; bottom: 36.8%; display: flex; align-items: center; gap: 9px; padding: 5px 12px 5px 5px; border-radius: 999px; background: #131316; border: 1px solid rgb(233 196 106 / .55); box-shadow: 0 14px 34px rgb(0 0 0 / .7); color: #F5F3EE; font: 600 13px/1 var(--sans); white-space: nowrap; --face-gap: #131316; }
 .ask-chip b { color: #E9C46A; font-weight: 600; }
 .ask-chip .dot { color: #85817A; }
 .chat-win { grid-column: 2; grid-row: 1 / span 2; display: flex; flex-direction: column; min-height: 640px; margin-top: 30px; overflow: hidden; }
@@ -513,7 +527,32 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 .quote { margin: 0 0 6px !important; padding: 4px 8px; border-left: 2px solid var(--accent); color: var(--accent); font: 500 12px/1.3 var(--sans); }
 .at { color: var(--accent); font-weight: 600; }
 .chat-box { display: flex; align-items: center; gap: 10px; margin: 14px; padding: 10px 14px; border-radius: 14px; background: var(--panel-solid); border: 1px solid var(--hairline-2); color: var(--ink-3); font-size: 14px; }
-.chat-box .send { flex: none; width: 30px; height: 30px; margin-left: auto; border-radius: 50%; background: var(--accent-fill); }
+.chat-box .send { flex: none; display: grid; place-items: center; width: 30px; height: 30px; margin-left: auto; border-radius: 50%; background: var(--accent-fill); }
+.chat-box .send svg { width: 16px; height: 16px; fill: none; stroke: var(--accent-on-fill); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Scrolled to on a screen big enough for it, the desktop comes up as a Mac's screen on the page and
+   grows until it fills the whole window, the page's header sliding away meanwhile, so its menu bar
+   and notch are at the very top as on a Mac. Then the Writer's ask arrives at the notch, as it does in
+   the app on an event: the notch is a plain black one, part of the screen's black bezel, until then.
+   The section is the window's height plus the scroll the zoom takes, with the screen held in place
+   meanwhile. main.js sets --zoom from 0 to 1 as the page scrolls, .asking once the screen is full, and
+   .desk-full on the page while the header is out of the way. Without the script, with reduced motion,
+   or on a smaller screen, the desktop is simply there, as above. (`overflow: clip`, not hidden: a
+   hidden overflow would make the section a scroller, and the screen would never stay put.) */
+.mac.zoom-on { --stage: 100vh; --zoom: 0; height: calc(var(--stage) + 90vh); border-top: 0; overflow: clip; }
+.mac.zoom-on .desk {
+  position: sticky; top: 0; display: flex; flex-direction: column; height: var(--stage); padding: 0; overflow: hidden;
+  scale: calc(.58 + .42 * var(--zoom)); border-radius: calc(30px * (1 - var(--zoom)));
+  box-shadow: 0 0 0 calc(14px * (1 - var(--zoom))) #000, 0 40px 90px rgb(0 0 0 / calc(.4 * (1 - var(--zoom))));
+}
+.top { transition: translate .4s var(--ease); }
+.desk-full .top { translate: 0 calc(-100% - 4px); } /* past its reading line too, which hangs below it */
+.mac.zoom-on .desk-grid { flex: 1; min-height: 0; width: 100%; grid-template-rows: auto auto; align-content: center; padding-top: 126px; padding-bottom: 24px; }
+.mac.zoom-on .chat-win { min-height: 0; height: min(640px, calc(var(--stage) - 180px)); margin-top: 0; }
+.mac.zoom-on .notch { clip-path: inset(-40px round 0 0 40px 40px); transition: clip-path .55s var(--ease), box-shadow .55s var(--ease); }
+.mac.zoom-on .notch > * { transition: opacity .3s var(--ease) .25s; }
+.mac.zoom-on:not(.asking) .notch { clip-path: inset(0 115px 108px round 0 0 14px 14px); box-shadow: none; }
+.mac.zoom-on:not(.asking) .notch > * { opacity: 0; transition-delay: 0s; }
 
 /* ---------------------------------------------------------------- 6 · On the iPhone */
 
@@ -624,6 +663,9 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 
 @media (max-width: 1100px) {
   .kinds { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* The deck's picture is smaller here, so the chip draws smaller too, still covering the slide's pill,
+     and a gap stays between it and the selected line. */
+  .ask-chip { scale: .86; transform-origin: 0 100%; }
   .better-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 400px); padding: 0; }
   .safe-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .safe-grid > li { min-height: 0; }
@@ -697,7 +739,7 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
   .notch img { width: 60px; }
   .menubar span:not(.menubar-clock) { display: none; }
   .safe-grid { grid-template-columns: minmax(0, 1fr); }
-  .ask-chip { top: auto; bottom: 6px; left: 50%; translate: -50% 0; scale: .9; }
+  .ask-chip { bottom: 6px; left: 50%; translate: -50% 0; scale: .9; transform-origin: 50% 100%; }
 }
 
 @media (max-width: 640px) {

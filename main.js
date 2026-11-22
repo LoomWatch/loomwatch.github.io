@@ -675,12 +675,17 @@
   // added: it drops into its place, and its words come in.
   function renderTray(fresh = null) {
     const on = hired()
+    // With everyone on the team there's no place for one more, and the four slots draw a little
+    // smaller so each name fits. (replaceChildren writes a null out as the text "null", so the
+    // empty place is only added when there is one.)
+    const full = on.length === AGENTS.length
+    slots.toggleAttribute('data-full', full)
     slots.replaceChildren(
       ...on.map((agent) => el('li', {}, el('button', {
         type: 'button', class: ['slot', agent.id === hot && 'hot', agent.id === fresh && 'drop-in'].filter(Boolean).join(' '), 'data-agent': agent.id,
         'aria-label': `Take ${agent.name} off the team`, onclick: () => takeOff(agent.id),
       }, el('img', { src: `assets/crew/${agent.id}.webp`, width: '256', height: '256', alt: '' }), el('span', { class: 'slot-name', text: agent.name }), el('span', { class: 'slot-x', 'aria-hidden': 'true', text: '×' })))),
-      on.length < AGENTS.length ? el('li', { class: 'slot-empty', 'aria-hidden': 'true' }, el('span', { text: touchOnly ? '+ tap a card' : '+ drop a card' })) : null,
+      ...(full ? [] : [el('li', { class: 'slot-empty', 'aria-hidden': 'true' }, el('span', { text: touchOnly ? '+ tap a card' : '+ drop a card' }))]),
     )
     trayN.textContent = usually()
     traySay.replaceChildren(...(on.length
@@ -792,6 +797,46 @@
     }, { rootMargin: '0px 0px -20% 0px' })
     seen.observe($('.better-grid', better))
   }
+
+  /* ================================================================ 5 · Your Mac, with a team inside */
+
+  // On a screen big enough for it, the desktop comes up as a Mac's screen on the page and grows as the
+  // page scrolls, until it fills the whole window, its menu bar and notch at the very top; once it
+  // does, the Writer's ask arrives at the notch. The screen is held in place meanwhile (styles.css,
+  // .zoom-on), and the page's header slides out of its way while it is held and nearly full, coming
+  // back as the section leaves or the screen shrinks again. It starts growing when the section's top
+  // is halfway down the window, is full 70% of the way through the held scroll, and stays full for the
+  // rest. With reduced motion, or on a smaller screen, it is simply there.
+  const mac = $('#mac')
+  const desk = $('.desk', mac)
+  const roomy = window.matchMedia('(min-width: 1024px) and (min-height: 780px)')
+  let zoomQueued = false
+  function paintZoom() {
+    zoomQueued = false
+    if (!mac.classList.contains('zoom-on')) return
+    const box = mac.getBoundingClientRect()
+    const lead = desk.offsetHeight / 2
+    const held = (mac.offsetHeight - desk.offsetHeight) * 0.7
+    const zoom = lead + held > 0 ? clamp((lead - box.top) / (lead + held)) : 1
+    mac.style.setProperty('--zoom', zoom.toFixed(4))
+    // Full is when the ask arrives; it goes again only once the screen is clearly smaller, so a
+    // scroll that stops at the edge doesn't make the notch open and close.
+    if (zoom >= 0.995) mac.classList.add('asking')
+    else if (zoom < 0.9) mac.classList.remove('asking')
+    // From about 0.7 the screen's top edge reaches the header, so the header goes; the screen is held
+    // until the section's bottom reaches the window's.
+    root.classList.toggle('desk-full', zoom >= 0.7 && box.bottom > window.innerHeight + 1)
+  }
+  function fitZoom() {
+    const on = !reduced && roomy.matches
+    mac.classList.toggle('zoom-on', on)
+    if (!on) { mac.classList.remove('asking'); mac.style.removeProperty('--zoom'); root.classList.remove('desk-full') }
+    paintZoom()
+  }
+  roomy.addEventListener('change', fitZoom)
+  window.addEventListener('scroll', () => { if (!zoomQueued) { zoomQueued = true; window.requestAnimationFrame(paintZoom) } }, { passive: true })
+  window.addEventListener('resize', () => { if (!zoomQueued) { zoomQueued = true; window.requestAnimationFrame(paintZoom) } })
+  fitZoom()
 
   /* ================================================================ 9 · Start */
 
