@@ -4,21 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LoomWatch — Hire your team of AI agents. They start today.</title>
-  <meta name="description" content="Hire a team of AI agents that work together on your Mac or Windows PC, ask before they act, and learn from one correction. Free to start.">
+  <meta name="description" content="Hire a team of AI agents that work together on your Mac, ask before they act, and learn from one correction. Free to start.">
   <meta name="theme-color" content="#08080A">
   <meta property="og:site_name" content="LoomWatch">
   <meta property="og:title" content="LoomWatch — Hire your team of AI agents. They start today.">
   <meta property="og:description" content="AI agents that work as a team on your Mac, and ask before they act. They learn from one correction, and every step is kept. Free to start.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://loomwatch.github.io/">
-  <meta property="og:image" content="https://loomwatch.github.io/social-card.jpg?v=18">
+  <meta property="og:image" content="https://loomwatch.github.io/social-card.jpg?v=20">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="LoomWatch: hire your team, they start today. Six friendly velvet figures holding one gold line.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="LoomWatch — Hire your team of AI agents. They start today.">
   <meta name="twitter:description" content="AI agents that work as a team on your Mac, and ask before they act. They learn from one correction, and every step is kept. Free to start.">
-  <meta name="twitter:image" content="https://loomwatch.github.io/social-card.jpg?v=18">
+  <meta name="twitter:image" content="https://loomwatch.github.io/social-card.jpg?v=20">
   <meta name="twitter:image:alt" content="LoomWatch: hire your team, they start today. Six friendly velvet figures holding one gold line.">
   <link rel="canonical" href="https://loomwatch.github.io/">
   <!-- Search results may show the link-preview picture full size. -->
@@ -48,10 +48,10 @@
         "@id": "https://loomwatch.github.io/#app",
         "name": "LoomWatch",
         "url": "https://loomwatch.github.io/",
-        "description": "AI agents that work as a team on your Mac or Windows PC, and ask before they act. They pass the work along, learn from one correction, and keep every step. Free to start.",
+        "description": "AI agents that work as a team on your Mac, and ask before they act. They pass the work along, learn from one correction, and keep every step. Free to start.",
         "image": "https://loomwatch.github.io/social-card.jpg",
         "applicationCategory": "BusinessApplication",
-        "operatingSystem": "macOS, Windows",
+        "operatingSystem": "macOS",
         "isAccessibleForFree": true,
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
         "downloadUrl": "https://github.com/LoomWatch/loomwatch.github.io/releases/latest",
@@ -236,11 +236,11 @@
          each shape of canvas the page has: the media queries guess for the first request, and the script
          after this section picks by the crew's box itself. -->
     <picture>
-      <source data-crew="rows" media="not all" srcset="assets/crew/crew-rows.webp" width="1544" height="540">
-      <source data-crew="tall" media="not all" srcset="assets/crew/crew-tall.webp" width="1440" height="266">
-      <source data-crew="narrow" media="(orientation: portrait)" srcset="assets/crew/crew-narrow.webp" width="1170" height="216">
-      <source data-crew="mid" media="(max-width: 1167px)" srcset="assets/crew/crew-mid.webp" width="1952" height="358">
-      <img class="crew-poster" src="assets/crew/crew.webp" width="2240" height="410" alt="Six friendly velvet figures holding one gold line: the Bake sale team’s Planner, Researcher, Writer and Checker, with Scout and Editor standing by." decoding="async" loading="lazy">
+      <source data-crew="rows" media="not all" srcset="assets/crew/crew-rows.webp" width="1544" height="280">
+      <source data-crew="tall" media="not all" srcset="assets/crew/crew-tall.webp" width="1440" height="262">
+      <source data-crew="narrow" media="(orientation: portrait)" srcset="assets/crew/crew-narrow.webp" width="1074" height="196">
+      <source data-crew="mid" media="(max-width: 1167px)" srcset="assets/crew/crew-mid.webp" width="1952" height="354">
+      <img class="crew-poster" src="assets/crew/crew.webp" width="2240" height="404" alt="Six friendly velvet figures holding one gold line: the Bake sale team’s Planner, Researcher, Writer and Checker, with Scout and Editor standing by." decoding="async" loading="lazy">
     </picture>
     <canvas class="crew-canvas" id="crew-canvas" aria-hidden="true"></canvas>
     <div class="crew-tags" id="crew-tags" aria-hidden="true"></div>
@@ -570,16 +570,14 @@
 <section class="sec start" id="start" aria-labelledby="start-h">
   <div class="wrap">
     <h2 id="start-h">Hire your first team <em>today.</em></h2>
-    <img class="start-crew" src="assets/crew/crew.webp" width="2240" height="410" alt="" loading="lazy">
-    <!-- Without JavaScript the Mac comes first. main.js puts the visitor's computer first: Windows when
-         the browser says it runs on Windows, the Mac otherwise. -->
+    <img class="start-crew" src="assets/crew/crew.webp" width="2240" height="404" alt="" loading="lazy">
+    <!-- The Mac app; Windows and the iPhone are coming. -->
     <div class="get" id="get">
       <a class="btn btn-lg btn-primary dl" data-os="mac" href="https://github.com/LoomWatch/loomwatch.github.io/releases/latest/download/LoomWatch-macos.dmg"><svg class="os-logo" aria-hidden="true"><use href="#os-apple"/></svg><span class="dl-for">Download for </span>Mac</a>
-      <a class="btn btn-lg btn-dark dl" data-os="windows" href="https://github.com/LoomWatch/loomwatch.github.io/releases/latest/download/LoomWatch-windows-setup.exe"><svg class="os-logo" aria-hidden="true"><use href="#os-windows"/></svg><span class="dl-for">Download for </span>Windows</a>
-      <span class="btn btn-lg soon-btn">iPhone · soon</span>
+      <span class="btn btn-lg soon-btn"><svg class="os-logo" aria-hidden="true"><use href="#os-windows"/></svg>Windows · soon</span>
+      <span class="btn btn-lg soon-btn"><svg class="os-logo" aria-hidden="true"><use href="#os-apple"/></svg>iPhone · soon</span>
     </div>
-    <p class="start-meta">Free to start · macOS 26+ · Windows 10 or 11</p>
-    <p class="start-note" id="win-note" hidden>If Windows says it protected your PC, click <b>More info</b>, then <b>Run anyway</b>.</p>
+    <p class="start-meta">Free to start · macOS 26+</p>
   </div>
 </section>
 

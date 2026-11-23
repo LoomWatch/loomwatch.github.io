@@ -1069,19 +1069,6 @@
   window.addEventListener('resize', () => { if (!zoomQueued) { zoomQueued = true; window.requestAnimationFrame(paintZoom) } })
   fitZoom()
 
-  /* ================================================================ 9 · Start */
-
-  // The download for the visitor's computer first: Windows when the browser says it runs on Windows,
-  // the Mac otherwise (a phone too). The other one is beside it, by its name.
-  if (/\bwin/i.test(navigator.userAgentData?.platform || navigator.userAgent)) {
-    for (const link of $$('#get .dl')) {
-      const mine = link.dataset.os === 'windows'
-      link.classList.toggle('btn-primary', mine)
-      link.classList.toggle('btn-dark', !mine)
-    }
-    $('#win-note').hidden = false
-  }
-
   /* ================================================================ First paint */
 
   applyTheme(root.dataset.theme === 'light' ? 'light' : 'dark')

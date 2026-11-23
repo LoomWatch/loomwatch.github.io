@@ -793,7 +793,7 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 .dl.btn-primary { order: 0; }
 /* The other computer's button says only its name; a screen reader still hears what it does. */
 .dl:not(.btn-primary) .dl-for { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.dl .os-logo { width: 17px; height: 17px; margin: -2px 2px 0 -4px; }
+.dl .os-logo, .soon-btn .os-logo { width: 17px; height: 17px; margin: -2px 2px 0 -4px; }
 .soon-btn, .soon-btn:hover { order: 2; background: transparent; border-style: dashed; border-color: var(--hairline-2); color: var(--ink-2); cursor: default; }
 .start .start-meta { margin: 22px 0 0; font: 500 14px/1.4 var(--sans); }
 .start-note { margin: 12px auto 0; max-width: 520px; font-size: 13.5px; line-height: 1.6; color: var(--ink-2); }
