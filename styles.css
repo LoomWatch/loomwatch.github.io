@@ -50,6 +50,7 @@
   --track: #1D1D22;
   --bubble: #1D1D22;
   --face-bg: #1D1D22;
+  --notch-black: #000;
   --mine-bg: #5A4512;
   --mine-line: transparent;
   --wallpaper: radial-gradient(900px 600px at 15% 40%, #3A2D4A 0%, transparent 60%), radial-gradient(900px 700px at 90% 80%, #4A3A1E 0%, transparent 60%), linear-gradient(160deg, #1B1824, #0D0C10);
@@ -74,9 +75,11 @@
   --sans: "Inter", "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --ease: cubic-bezier(.2, 0, 0, 1);
-  --gutter: 24px;
   color-scheme: dark;
 }
+/* The page's side margin, on :root alone: on .always-dark too it would undo the phone's 16px under
+   the notch. */
+:root { --gutter: 24px; }
 
 :root[data-theme="light"] {
   --ground: #FAF8F3;
@@ -261,6 +264,39 @@ em { font-style: italic; }
 /* What is drawn as a dark thing in either theme: the notch, a phone's Lock Screen, the app's own chips
    over its screenshots. It takes the dark theme's tokens, whatever the page's. */
 .always-dark { color: var(--ink); color-scheme: dark; }
+
+/* A black that hangs from a top edge, as Apple's notch does and the Mac app draws it (NotchOutline):
+   the lower corners are round (--notch-r), and where it meets the edge it curves out on each side
+   with half that radius, past the body's width. Here both are circles, where the app draws Apple's
+   continuous corners, which start turning further out. The gold ring follows the curves and leaves
+   out the edge itself, fading in over the top 3px; the glow (--notch-glow) is round the body. The
+   body is the box: its own black, rounded corners and glow, and the ring a border on the sides and
+   bottom (Safari draws a rounded box's edge clean, but a gradient's arc that big ragged). The two top
+   curves are background layers, each filled outside a circle: ::before the gold, under ::after the
+   black, which starts 1px further out and covers the top of the sides' gold, leaving a 1px gold band
+   round each curve as heavy as the sides'. */
+.notch, .mini-notch {
+  --notch-curve: calc(var(--notch-r) / 2); --notch-ring: color-mix(in srgb, var(--accent-fill) 80%, transparent);
+  background: var(--notch-black) padding-box; border: 1px solid var(--notch-ring); border-top: 0; border-radius: 0 0 var(--notch-r) var(--notch-r);
+  box-shadow: 0 0 var(--notch-glow) var(--notch-glow-c);
+}
+.notch::before, .notch::after, .mini-notch::before, .mini-notch::after {
+  content: ''; position: absolute; z-index: -1; top: 0; right: calc(-1px - var(--notch-curve)); left: calc(-1px - var(--notch-curve)); height: var(--notch-curve); pointer-events: none;
+  background-position: 0 0, 100% 0; background-repeat: no-repeat;
+}
+.notch::before, .mini-notch::before {
+  background-image:
+    radial-gradient(circle at 0 100%, transparent calc(var(--notch-curve) - .25px), var(--notch-ring) calc(var(--notch-curve) + .25px)),
+    radial-gradient(circle at 100% 100%, transparent calc(var(--notch-curve) - .25px), var(--notch-ring) calc(var(--notch-curve) + .25px));
+  background-size: var(--notch-curve) var(--notch-curve);
+  -webkit-mask: linear-gradient(transparent, #000 3px); mask: linear-gradient(transparent, #000 3px);
+}
+.notch::after, .mini-notch::after {
+  background-image:
+    radial-gradient(circle at 0 100%, transparent calc(var(--notch-curve) + .75px), var(--notch-black) calc(var(--notch-curve) + 1.25px)),
+    radial-gradient(circle at 100% 100%, transparent calc(var(--notch-curve) + .75px), var(--notch-black) calc(var(--notch-curve) + 1.25px));
+  background-size: calc(var(--notch-curve) + 2px) var(--notch-curve);
+}
 
 /* An agent's face: its figure, cropped round, in a ring of its colour. */
 .face { --ring: var(--m, var(--hairline-2)); display: inline-block; flex: none; width: 26px; height: 26px; border-radius: 50%; overflow: hidden; background: var(--face-bg); box-shadow: 0 0 0 2px var(--face-gap, var(--ground)), 0 0 0 3.5px var(--ring); vertical-align: middle; }
@@ -610,7 +646,7 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 .menubar { position: relative; z-index: 2; display: flex; align-items: center; gap: 20px; height: 30px; padding: 0 22px; background: var(--menubar); color: var(--menubar-ink); font: 400 13px/1 var(--sans); }
 .menubar b { font-weight: 600; }
 .menubar-clock { margin-left: auto; }
-.notch { position: absolute; left: 50%; top: 0; z-index: 3; display: flex; align-items: center; gap: 16px; width: 380px; max-width: calc(100% - 2 * var(--gutter)); min-height: 140px; padding: 28px 22px 16px; translate: -50% 0; border-radius: 0 0 30px 30px; background: #000; box-shadow: 0 0 0 1px rgb(216 169 60 / .8), 0 0 30px rgb(216 169 60 / .45); }
+.notch { position: absolute; left: 50%; top: 0; z-index: 3; display: flex; align-items: center; gap: 16px; width: 380px; max-width: calc(100% - 2 * (var(--gutter) + var(--notch-curve))); min-height: 140px; padding: 28px 22px 16px; translate: -50% 0; --notch-r: 30px; --notch-glow: 30px; --notch-glow-c: color-mix(in srgb, var(--accent-fill) 45%, transparent); }
 .notch img { flex: none; width: 76px; margin-top: -6px; }
 .notch p { margin: 0; }
 .notch-q { font: 600 15px/1.3 var(--sans); }
@@ -700,9 +736,11 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
    (.notch-wait) until the ask arrives (.asking): when the desktop has grown to fill the window, or,
    where it doesn't grow, when the notch comes into view. Without the script, or with reduced motion,
    the notch is simply open. */
-.mac.notch-wait .notch { transform-origin: 50% 0; transition: scale .56s cubic-bezier(.32, 1.36, .5, 1), box-shadow .4s var(--ease) .12s; }
+.mac.notch-wait .notch { transform-origin: 50% 0; transition: scale .56s cubic-bezier(.32, 1.36, .5, 1), box-shadow .4s var(--ease) .12s, border-color .4s var(--ease) .12s; }
+.mac.notch-wait .notch::before { transition: opacity .4s var(--ease) .12s; }
 .mac.notch-wait .notch > * { transition: opacity .22s var(--ease) .16s, translate .22s var(--ease) .16s; }
-.mac.notch-wait:not(.asking) .notch { scale: .4 .23; box-shadow: none; transition: scale .3s cubic-bezier(.3, 0, .8, .15), box-shadow .1s; }
+.mac.notch-wait:not(.asking) .notch { scale: .4 .23; border-color: transparent; box-shadow: none; transition: scale .3s cubic-bezier(.3, 0, .8, .15), box-shadow .1s, border-color .1s; }
+.mac.notch-wait:not(.asking) .notch::before { opacity: 0; transition: opacity .1s; }
 .mac.notch-wait:not(.asking) .notch > * { opacity: 0; translate: 0 -6px; transition-duration: .08s; transition-delay: 0s; }
 .mac.notch-wait.asking .notch img { transform-origin: 50% 0; animation: notch-drop 1.3s var(--ease) .2s both; }
 @keyframes notch-drop {
@@ -748,7 +786,12 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
 .safe-grid h3 { margin: 0; font: 400 26px/1.1 var(--serif); }
 .safe-grid > li > p { margin: 0; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
 .piece { display: flex; align-items: center; justify-content: center; height: 120px; }
-.mini-notch { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 0 0 18px 18px; background: #000; box-shadow: 0 0 0 1px rgb(216 169 60 / .8), 0 0 18px rgb(216 169 60 / .4); --face-gap: #000; }
+.mini-notch { position: relative; isolation: isolate; display: flex; align-items: center; gap: 10px; padding: 12px 14px; --notch-r: 18px; --notch-glow: 18px; --notch-glow-c: color-mix(in srgb, var(--accent-fill) 40%, transparent); --face-gap: var(--notch-black); }
+/* The card's notch hangs from the card's top edge, as from a screen's: its piece starts at the edge,
+   over the border, and is taller by as much, so the headings below still line up; the glow stops at
+   the edge. */
+.piece-top { align-items: flex-start; height: calc(120px + 25px); margin-top: -25px; }
+.piece-top .mini-notch { clip-path: inset(0 -40px -40px); }
 .mini-notch b { font: 600 12px/1.2 var(--sans); }
 .mini-notch .fake-acts { gap: 6px; margin-top: 7px; }
 .mini-notch .fake { padding: 6px 9px; border-radius: 6px; font-size: 11px; }
@@ -870,6 +913,11 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
   .phone .sec-sub { margin-left: auto; margin-right: auto; }
 }
 
+/* Just above the narrow layout the notch's left curve would reach Edit, the menubar's last word. */
+@media (max-width: 800px) {
+  .menubar span:not(.menubar-clock) { visibility: hidden; }
+}
+
 @media (max-width: 760px) {
   /* A phone's hand: the cards in a row to scroll through, upright, each one tapped to add it. */
   .fan { justify-content: flex-start; gap: 14px; margin: 0 calc(-1 * var(--gutter)); padding: 28px var(--gutter) 30px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 var(--gutter); overscroll-behavior-x: contain; }
@@ -898,10 +946,11 @@ body.dragging, body.dragging * { cursor: grabbing !important; }
   .lesson, .log-turn { margin-left: 0; }
   .msg-bubble { margin-left: 34px; }
   .desk-grid { padding: 164px var(--gutter) 0; }
-  .notch { width: calc(100% - 2 * var(--gutter)); padding: 24px 16px 14px; min-height: 0; gap: 12px; }
+  .notch { width: calc(100% - 2 * (var(--gutter) + var(--notch-curve))); padding: 24px 16px 14px; min-height: 0; gap: 12px; }
   .notch img { width: 60px; }
-  .menubar span:not(.menubar-clock) { display: none; }
+  .menubar > * { visibility: hidden; } /* the notch spans it, and its words' ends would show past the curves */
   .safe-grid { grid-template-columns: minmax(0, 1fr); }
+  .piece-top { height: 120px; } /* one card a row: no heading beside it to line up with */
   .deck-shot .ask-chip { bottom: 6px; left: 50%; translate: -50% 0; scale: .9; transform-origin: 50% 100%; }
 }
 
